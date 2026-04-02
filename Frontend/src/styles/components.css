@@ -1,0 +1,175 @@
+@reference "tailwindcss";
+@layer components {
+
+  /* ── Buttons ─────────────────────────────────────── */
+
+  .btn-primary {
+    @apply bg-ultraviolet text-text-primary font-body font-semibold
+           px-6 py-3 rounded-pill transition-all duration-300 ease-brand
+           hover:bg-violet-light hover:shadow-glow
+           active:bg-violet-dark
+           animate-pulseGlow;
+  }
+
+  .btn-outline {
+    @apply border border-ultraviolet text-text-primary font-body font-semibold
+           px-6 py-3 rounded-pill transition-all duration-300 ease-brand
+           hover:bg-ultraviolet/10 hover:shadow-glow;
+  }
+
+  /* ── Cards ───────────────────────────────────────── */
+
+  .card {
+    @apply bg-surface border border-border rounded-card shadow-card
+           p-6 transition-transform duration-300 ease-brand
+           hover:-translate-y-1 hover:shadow-glow;
+  }
+
+  .card-team {
+    @apply bg-surface border border-border rounded-card shadow-card
+           p-6 transition-transform duration-300 ease-brand hover:-translate-y-1 hover:shadow-glow
+           text-center flex flex-col items-center gap-3;
+  }
+
+  .card-sponsor {
+    @apply bg-surface border border-border rounded-card shadow-card
+           transition-transform ease-brand hover:-translate-y-1 hover:shadow-glow
+           flex items-center justify-center p-8
+           grayscale hover:grayscale-0 transition-all duration-300;
+  }
+
+  /* ── Layout ──────────────────────────────────────── */
+
+  .section-wrapper {
+    @apply py-section px-container max-w-7xl mx-auto;
+  }
+
+  .section-title {
+    @apply font-display text-section text-text-primary mb-2;
+  }
+
+  .section-subtitle {
+    @apply font-body text-text-secondary text-lg mb-10;
+  }
+
+  /* ── Navbar ──────────────────────────────────────── */
+
+  .navbar {
+    @apply fixed top-0 left-0 right-0 z-50
+           flex items-center justify-between
+           px-container py-4
+           bg-void/80 backdrop-blur-md border-b border-border
+           transition-all duration-300 ease-brand;
+  }
+
+  .navbar-link {
+    @apply font-body text-text-secondary hover:text-text-primary
+           transition-colors duration-200 ease-brand;
+  }
+
+  /* ── Timer ───────────────────────────────────────── */
+
+  .timer-digit {
+    @apply font-mono text-4xl text-ultraviolet tabular-nums;
+  }
+
+  .timer-label {
+    @apply font-body text-xs text-text-muted uppercase tracking-widest mt-1;
+  }
+
+  /* ── FAQ Accordion ───────────────────────────────── */
+
+  .faq-item {
+    @apply border border-border rounded-card mb-3
+           overflow-hidden transition-all duration-300 ease-brand;
+  }
+
+  .faq-question {
+    @apply w-full text-left px-6 py-4 font-body font-semibold
+           text-text-primary flex justify-between items-center
+           hover:bg-surface/60 transition-colors duration-200;
+  }
+
+  .faq-answer {
+    @apply px-6 pb-4 font-body text-text-secondary leading-relaxed;
+  }
+
+
+  /* ── Schedule Tabs ───────────────────────────────── */
+
+  .schedule-tab {
+    @apply font-body font-semibold px-6 py-2 rounded-pill
+           border border-border text-text-secondary
+           transition-all duration-200 ease-brand
+           hover:border-ultraviolet hover:text-text-primary;
+  }
+
+  .schedule-tab-active {
+    @apply bg-ultraviolet border-ultraviolet text-text-primary shadow-glow;
+  }
+
+  /* ── Marquee (Sponsor Carousel) ──────────────────── */
+
+  .marquee-track {
+    @apply flex gap-12 animate-marquee whitespace-nowrap;
+  }
+
+  .marquee-wrapper {
+    @apply overflow-hidden relative;
+  }
+
+  .marquee-wrapper:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /* ── Schedule Calendar Grid ───────────────────────── */
+
+  .schedule-grid-wrapper {
+    @apply border border-border rounded-card overflow-auto;
+  }
+
+  .schedule-grid {
+    @apply bg-void min-w-max;
+    display: grid;
+    grid-auto-rows: 2.5rem;
+  }
+
+  .schedule-grid-corner {
+    @apply bg-surface border-b border-r border-border;
+  }
+
+  .schedule-day-header {
+    @apply bg-surface border-b border-r border-border
+           font-mono text-sm font-semibold text-text-primary
+           flex items-center justify-center py-3;
+  }
+
+  .schedule-time-label {
+    @apply bg-surface/50 border-b border-r border-border
+           font-mono text-xs text-text-muted
+           flex items-end justify-end pb-1 pr-2;
+  }
+
+  .schedule-cell {
+    @apply border-b border-r border-border/40 bg-surface/20;
+  }
+
+  .schedule-event {
+    @apply bg-ultraviolet/85 border-l-2 border-violet-light
+           font-body text-xs text-text-primary
+           px-2 py-1 overflow-hidden cursor-pointer
+           hover:bg-ultraviolet
+           transition-colors duration-200 ease-brand
+           flex flex-col gap-0.5;
+    position: relative;
+    z-index: 1;
+  }
+
+  .schedule-event-time {
+    @apply font-mono text-xs text-violet-light opacity-80;
+  }
+
+  .schedule-event-title {
+    @apply font-body font-semibold leading-tight;
+  }
+}
