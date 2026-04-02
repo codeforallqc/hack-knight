@@ -154,9 +154,6 @@ Created all reusable component classes using `@apply`. Added `@reference "tailwi
 | `.faq-item` | Bordered accordion container |
 | `.faq-question` | Full-width clickable accordion header |
 | `.faq-answer` | Accordion body text |
-| `.badge-gold` | Gold sponsor tier badge pill |
-| `.badge-silver` | Silver sponsor tier badge pill |
-| `.badge-bronze` | Bronze sponsor tier badge pill |
 | `.schedule-tab` | Inactive tab pill |
 | `.schedule-tab-active` | Active tab pill with violet fill |
 | `.marquee-track` | Scrolling flex row with marquee animation |
@@ -175,8 +172,6 @@ Replaced the default Vite starter template with a **component showcase page** fo
 ---
 
 ## Framer Motion Notes
-
-The `motion` package was already listed in `package.json`. No install needed.
 
 > **Import path for v11+:**
 > ```js

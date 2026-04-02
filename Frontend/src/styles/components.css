@@ -33,9 +33,9 @@
 
   .card-sponsor {
     @apply bg-surface border border-border rounded-card shadow-card
-           transition-transform ease-brand hover:-translate-y-1 hover:shadow-glow
+           transition-all duration-300 ease-brand hover:-translate-y-1 hover:shadow-glow
            flex items-center justify-center p-8
-           grayscale hover:grayscale-0 transition-all duration-300;
+           grayscale hover:grayscale-0;
   }
 
   /* ── Layout ──────────────────────────────────────── */

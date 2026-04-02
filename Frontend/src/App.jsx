@@ -278,7 +278,7 @@ function App() {
             {[...Array(8)].map((_, i) => (
               <div
                 key={i}
-                className="flex-shrink-0 w-32 h-16 bg-border rounded-card flex items-center justify-center"
+                className="shrink-0 w-32 h-16 bg-border rounded-card flex items-center justify-center"
               >
                 <span className="font-mono text-text-muted text-xs">LOGO</span>
               </div>
