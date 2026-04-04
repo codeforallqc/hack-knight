@@ -70,7 +70,7 @@
   /* ── Timer ───────────────────────────────────────── */
 
   .timer-digit {
-    @apply font-mono text-5xl text-text-primary tabular-nums;
+    @apply font-mono text-5xl font-bold text-text-primary tabular-nums;
   }
 
   .timer-label {

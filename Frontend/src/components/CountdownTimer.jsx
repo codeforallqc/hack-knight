@@ -2,37 +2,31 @@ import { useState, useEffect } from "react";
 
 export default function CountdownTimer() {
 
-  const targetDate = new Date("2026-10-17T00:00:00").getTime(); // set target date for the countdown
+  // ── Target date: the hackathon start date ──
+  const targetDate = new Date("2026-10-17T00:00:00").getTime();
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-
+  // ── Calculates the time remaining between now and the target date ──
   function calculateTimeLeft() {
     const now = new Date().getTime();
     const difference = targetDate - now;
 
-    let time = {};
-
     if (difference > 0) {
-      time = {
-        months: Math.floor(difference / (1000 * 60 * 60 * 24 * 30)),
-        days: Math.floor((difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      return {
+        months:  Math.floor(difference / (1000 * 60 * 60 * 24 * 30)),
+        days:    Math.floor((difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24)),
+        hours:   Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
         minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
         seconds: Math.floor((difference % (1000 * 60)) / 1000),
       };
-    } else {
-      time = {
-        months: 0,
-        days: 0,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-      };
     }
 
-    return time;
+    return { months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
   }
 
+  // ── State: holds the current time-left object, initialized on first render ──
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  // ── Effect: starts a 1-second interval to update timeLeft, cleans up on unmount ──
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
@@ -41,19 +35,65 @@ export default function CountdownTimer() {
     return () => clearInterval(timer);
   }, []);
 
-  // helper to format numbers to always show two digits (05 instead of 5)
-  const FormatNumber = (num) => {
-    return num < 10 ? `0${num}` : num;
-  }
+  // ── Helper: ensures numbers always display as two digits (e.g. 5 → "05") ──
+  const formatNumber = (num) => (num < 10 ? `0${num}` : num);
 
   return (
-    <div className="flex justify-center my-12">                                           {/* outer wrapper for the countdown block */}
-      <div className="flex gap-4 items-start">                                         {/* inner wrapper for the five time units */}
-        <div className="flex flex-col items-center"><span className="timer-digit">{FormatNumber(timeLeft.months)}</span> <small className="timer-label">MONTHS</small></div> <span className="timer-digit mt-1">:</span>
-        <div className="flex flex-col items-center"><span className="timer-digit">{FormatNumber(timeLeft.days)}</span> <small className="timer-label">DAYS</small></div> <span className="timer-digit mt-1">:</span>
-        <div className="flex flex-col items-center"><span className="timer-digit">{FormatNumber(timeLeft.hours)}</span> <small className="timer-label">HOURS</small></div> <span className="timer-digit mt-1">:</span>
-        <div className="flex flex-col items-center"><span className="timer-digit">{FormatNumber(timeLeft.minutes)}</span> <small className="timer-label">MINUTES</small></div> <span className="timer-digit mt-1">:</span>
-        <div className="flex flex-col items-center"><span className="timer-digit">{FormatNumber(timeLeft.seconds)}</span> <small className="timer-label">SECONDS</small></div>
+    // ── Outer wrapper: centers the timer horizontally with vertical spacing ──
+    <div className="flex justify-center my-12">
+
+      {/* ── Pill container: rounded card with purple border and dark background ── */}
+      <div
+        className="border border-ultraviolet rounded-[2rem] px-12 py-8 w-full"
+        style={{ backgroundColor: "#343439" }}
+      >
+
+        {/* ── Inner row: evenly spaces the five time units + separators ── */}
+        <div className="flex gap-10 items-center justify-center">
+
+          {/* ── Time unit: MONTHS ── */}
+          <div className="flex flex-col items-center">
+            <span className="timer-digit">{formatNumber(timeLeft.months)}</span>
+            <small className="timer-label">MONTHS</small>
+          </div>
+
+          {/* ── Separator ── */}
+          <span className="font-mono text-2xl mb-4" style={{ color: "#4E4E53" }}>:</span>
+
+          {/* ── Time unit: DAYS ── */}
+          <div className="flex flex-col items-center">
+            <span className="timer-digit">{formatNumber(timeLeft.days)}</span>
+            <small className="timer-label">DAYS</small>
+          </div>
+
+          {/* ── Separator ── */}
+          <span className="font-mono text-2xl mb-4" style={{ color: "#4E4E53" }}>:</span>
+
+          {/* ── Time unit: HOURS ── */}
+          <div className="flex flex-col items-center">
+            <span className="timer-digit">{formatNumber(timeLeft.hours)}</span>
+            <small className="timer-label">HOURS</small>
+          </div>
+
+          {/* ── Separator ── */}
+          <span className="font-mono text-2xl mb-4" style={{ color: "#4E4E53" }}>:</span>
+
+          {/* ── Time unit: MINUTES ── */}
+          <div className="flex flex-col items-center">
+            <span className="timer-digit">{formatNumber(timeLeft.minutes)}</span>
+            <small className="timer-label">MINUTES</small>
+          </div>
+
+          {/* ── Separator ── */}
+          <span className="font-mono text-2xl mb-4" style={{ color: "#4E4E53" }}>:</span>
+
+          {/* ── Time unit: SECONDS ── */}
+          <div className="flex flex-col items-center">
+            <span className="timer-digit">{formatNumber(timeLeft.seconds)}</span>
+            <small className="timer-label">SECONDS</small>
+          </div>
+
+        </div>
       </div>
     </div>
   );

@@ -1,14 +1,19 @@
-export default function PhotoGallery() {
+import photo1 from "../assets/photos/hackknight_1.jpg";
+import photo2 from "../assets/photos/hackknight_2.jpg";
+import photo3 from "../assets/photos/hackknight_3.jpg";
+import photo4 from "../assets/photos/hackknight_4.jpg";
+import photo5 from "../assets/photos/hackknight_5.jpg";
+import photo6 from "../assets/photos/hackknight_6.jpg";
 
-    // Array of photo objects — replace src values with real image paths once photos are added
-    const photos = [                                  // each object has a src (file path) and alt (accessibility description)
-      { src: "/assets/photos/photo1.jpg", alt: "HackKnight past event photo 1" },
-      { src: "/assets/photos/photo2.jpg", alt: "HackKnight past event photo 2" },
-      { src: "/assets/photos/photo3.jpg", alt: "HackKnight past event photo 3" },
-      { src: "/assets/photos/photo4.jpg", alt: "HackKnight past event photo 4" },
-      { src: "/assets/photos/photo5.jpg", alt: "HackKnight past event photo 5" },
-      { src: "/assets/photos/photo6.jpg", alt: "HackKnight past event photo 6" },
-    ];
+export default function PhotoGallery() {
+  const photos = [
+    { src: photo1, alt: "HackKnight past event photo 1" },
+    { src: photo2, alt: "HackKnight past event photo 2" },
+    { src: photo3, alt: "HackKnight past event photo 3" },
+    { src: photo4, alt: "HackKnight past event photo 4" },
+    { src: photo5, alt: "HackKnight past event photo 5" },
+    { src: photo6, alt: "HackKnight past event photo 6" },
+  ];
   
     return (
       <section className="section-wrapper py-24">                                       {/* section wrapper for the gallery block */}
