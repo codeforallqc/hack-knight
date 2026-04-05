@@ -11,69 +11,86 @@ export default function SponsorsPage() {
   const bronze   = sponsors.filter(s => s.tier === "bronze");
 
   return (
-    <main>
-      <h1>Our Sponsors</h1>
+    <main className="section-wrapper">
+
+      {/* Page heading */}
+      <h1 className="section-title text-center">Our Sponsors</h1>
+      <p className="section-subtitle text-center">
+        HackKnight is made possible by the support of our amazing sponsors.
+      </p>
 
       {/* Platinum tier — Logo size: Large+, Company Blurb: Yes */}
-      <section>
-        <div>
-          {platinum.map((sponsor, index) => (
-            <div key={index} className="sponsor-card platinum">
-              <a href={sponsor.url} target="_blank" rel="noreferrer">
-                <img src={sponsor.logo} alt={sponsor.name} data-size="large-plus" />
-              </a>
-              {sponsor.companyBlurb && (
-                <p className="company-blurb">{sponsor.companyBlurb}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+      {platinum.length > 0 && (
+        <section>
+          <div className="sponsors-grid-platinum">
+            {platinum.map((sponsor, index) => (
+              <div key={index} className="sponsor-card platinum">
+                <a href={sponsor.url} target="_blank" rel="noreferrer">
+                  <img src={sponsor.logo} alt={sponsor.name} data-size="large-plus" />
+                </a>
+                <p className="sponsor-name">{sponsor.name}</p>
+                {sponsor.companyBlurb && (
+                  <p className="company-blurb">{sponsor.companyBlurb}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Gold tier — Logo size: Large, Company Blurb: Yes */}
-      <section>
-        <div>
-          {gold.map((sponsor, index) => (
-            <div key={index} className="sponsor-card gold">
-              <a href={sponsor.url} target="_blank" rel="noreferrer">
-                <img src={sponsor.logo} alt={sponsor.name} data-size="large" />
-              </a>
-              {sponsor.companyBlurb && (
-                <p className="company-blurb">{sponsor.companyBlurb}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+      {gold.length > 0 && (
+        <section>
+          <div className="sponsors-grid-gold">
+            {gold.map((sponsor, index) => (
+              <div key={index} className="sponsor-card gold">
+                <a href={sponsor.url} target="_blank" rel="noreferrer">
+                  <img src={sponsor.logo} alt={sponsor.name} data-size="large" />
+                </a>
+                <p className="sponsor-name">{sponsor.name}</p>
+                {sponsor.companyBlurb && (
+                  <p className="company-blurb">{sponsor.companyBlurb}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Silver tier — Logo size: Medium, Company Blurb: Yes */}
-      <section>
-        <div>
-          {silver.map((sponsor, index) => (
-            <div key={index} className="sponsor-card silver">
-              <a href={sponsor.url} target="_blank" rel="noreferrer">
-                <img src={sponsor.logo} alt={sponsor.name} data-size="medium" />
-              </a>
-              {sponsor.companyBlurb && (
-                <p className="company-blurb">{sponsor.companyBlurb}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+      {silver.length > 0 && (
+        <section>
+          <div className="sponsors-grid-silver">
+            {silver.map((sponsor, index) => (
+              <div key={index} className="sponsor-card silver">
+                <a href={sponsor.url} target="_blank" rel="noreferrer">
+                  <img src={sponsor.logo} alt={sponsor.name} data-size="medium" />
+                </a>
+                <p className="sponsor-name">{sponsor.name}</p>
+                {sponsor.companyBlurb && (
+                  <p className="company-blurb">{sponsor.companyBlurb}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Bronze tier — Logo size: Small, Company Blurb: No */}
-      <section>
-        <div>
-          {bronze.map((sponsor, index) => (
-            <div key={index} className="sponsor-card bronze">
-              <a href={sponsor.url} target="_blank" rel="noreferrer">
-                <img src={sponsor.logo} alt={sponsor.name} data-size="small" />
-              </a>
-            </div>
-          ))}
-        </div>
-      </section>
+      {bronze.length > 0 && (
+        <section>
+          <div className="sponsors-grid-bronze">
+            {bronze.map((sponsor, index) => (
+              <div key={index} className="sponsor-card bronze">
+                <a href={sponsor.url} target="_blank" rel="noreferrer">
+                  <img src={sponsor.logo} alt={sponsor.name} data-size="small" />
+                </a>
+                <p className="sponsor-name">{sponsor.name}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
     </main>
   );

@@ -38,6 +38,96 @@
            grayscale hover:grayscale-0;
   }
 
+  /* ── Sponsors Page ────────────────────────────────── */
+
+  .sponsors-tier-label {
+    @apply font-mono text-xs uppercase tracking-[0.2em] text-text-muted mb-6
+           flex items-center gap-3;
+  }
+
+  .sponsors-tier-label::before,
+  .sponsors-tier-label::after {
+    content: '';
+    @apply flex-1 border-t border-border;
+  }
+
+  /* Tier grids — column count driven by tier prominence */
+  .sponsors-grid-platinum {
+    @apply grid gap-6 mb-16;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+
+  .sponsors-grid-gold {
+    @apply grid gap-5 mb-16;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .sponsors-grid-silver {
+    @apply grid gap-4 mb-16;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .sponsors-grid-bronze {
+    @apply grid gap-4 mb-16;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  /* Base sponsor card */
+  .sponsor-card {
+    @apply bg-surface border border-border rounded-card shadow-card
+           flex flex-col items-center justify-center gap-4 p-6
+           transition-all duration-300 ease-brand
+           hover:-translate-y-1 grayscale hover:grayscale-0;
+  }
+
+  /* Tier colour accents on hover */
+  .sponsor-card.platinum {
+    @apply hover:border-violet-light;
+    &:hover { box-shadow: 0 0 28px rgba(192, 132, 252, 0.35); }
+  }
+
+  .sponsor-card.gold {
+    @apply hover:border-yellow-400/60;
+    &:hover { box-shadow: 0 0 24px rgba(250, 204, 21, 0.25); }
+  }
+
+  .sponsor-card.silver {
+    @apply hover:border-zinc-300/60;
+    &:hover { box-shadow: 0 0 20px rgba(212, 212, 216, 0.2); }
+  }
+
+  .sponsor-card.bronze {
+    @apply hover:border-orange-400/50;
+    &:hover { box-shadow: 0 0 16px rgba(251, 146, 60, 0.2); }
+  }
+
+  /* Logo sizing via data-size attribute */
+  .sponsor-card img[data-size="large-plus"] {
+    @apply max-h-64 w-auto object-contain;
+  }
+
+  .sponsor-card img[data-size="large"] {
+    @apply max-h-48 w-auto object-contain;
+  }
+
+  .sponsor-card img[data-size="medium"] {
+    @apply max-h-32 w-auto object-contain;
+  }
+
+  .sponsor-card img[data-size="small"] {
+    @apply max-h-24 w-auto object-contain;
+  }
+
+  /* Sponsor name */
+  .sponsor-name {
+    @apply font-body font-bold text-sm text-text-primary text-center;
+  }
+
+  /* Company blurb */
+  .company-blurb {
+    @apply font-body text-sm text-text-secondary text-center leading-relaxed;
+  }
+
   /* ── Layout ──────────────────────────────────────── */
 
   .section-wrapper {
