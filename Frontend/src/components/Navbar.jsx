@@ -28,6 +28,10 @@ export default function Navbar() {
           <a href="/#faq" className="navbar-link">FAQ</a>                      {/* href="/#faq" scrolls to the element with id="faq" on the homepage */}
         </li>
 
+        <li>                                           {/* list item for Photo Gallery */}
+          <a href="/#gallery" className="navbar-link">Previous Event Highlights</a>         {/* href="/#sponsors" scrolls to the element with id="sponsors" on the homepage */}
+        </li>
+
       </ul>
 
       <Link to="/register" className="btn-primary">Register</Link>                        {/* placeholder Register button — TEMPORARY */}
