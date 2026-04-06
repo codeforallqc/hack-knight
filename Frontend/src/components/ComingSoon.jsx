@@ -1,9 +1,13 @@
-import { Link } from 'react-router-dom';  // Link lets us navigate back home without a page refresh
+import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function ComingSoon() {
+  useEffect(() => {
+    window.scrollTo(0, 0);  // force scroll to top on mount
+  }, []);
+  
   return (
-    <section className="section-wrapper flex flex-col items-center justify-center min-h-screen text-center">
-
+    <section className="flex flex-col items-center justify-center text-center px-container" style={{ minHeight: "calc(100vh - 4rem)" }}>
       <h1 className="font-display font-bold text-hero text-text-primary mb-4">
         Applications <span className="text-ultraviolet">Opening Soon</span>
       </h1>

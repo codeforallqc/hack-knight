@@ -16,8 +16,8 @@ export default function PhotoGallery() {
   ];
   
     return (
-      <section className="section-wrapper py-24">                                       {/* section wrapper for the gallery block */}
-        <h2 className="section-title text-center">Photo Gallery of Past Events</h2>         {/* section heading — matches the screenshot */}
+      <section id = "photos" className="section-wrapper py-24">                                       {/* section wrapper for the gallery block */}
+        <h2 className="section-title text-center">Past Event Highlights</h2>         {/* section heading — matches the screenshot */}
   
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10">                                         {/* gallery grid container — teammate adds CSS grid */}
           {photos.map((photo, index) => (             // loop over each photo object
