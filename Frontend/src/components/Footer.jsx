@@ -45,10 +45,6 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-border/50 py-6 text-center md:flex md:justify-between px-container max-w-7xl mx-auto">
         <p className="font-body text-text-muted text-xs mb-4 md:mb-0">©2026 HackKnight</p>                       {/* copyright line */}
-        <div className="flex gap-4 justify-center md:justify-end">
-          <a href="#" className="navbar-link text-xs">Privacy & Policy</a>            {/* placeholder href */}
-          <a href="#" className="navbar-link text-xs">Terms & Condition</a>           {/* placeholder href */}
-        </div>
       </div>
     </footer>
   );
