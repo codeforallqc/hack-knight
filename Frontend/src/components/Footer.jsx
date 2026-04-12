@@ -2,15 +2,15 @@
 // Rendered in App.jsx so it appears on every page.
 
 import { Link } from 'react-router-dom';            // Link for internal page navigation
-import logoUrl from '../assets/logoprimary.svg';           // dynamically import the logo from assets
+import logoUrl from '../assets/brand/logoprimary.svg';
 
 export default function Footer() {
   return (
     <footer className="bg-surface/30 border-t border-border mt-24">                                        {/* <footer> is a semantic HTML element for the bottom of the page */}
       <div className="section-wrapper py-16 grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div className="md:col-span-1">
-          <Link to="/" className="flex items-center mb-4 hover:scale-105 transition-transform duration-300 origin-left w-max">
-            <img src={logoUrl} alt="HackKnight Logo" className="w-12 h-12" />
+        <div className="md:col-span-1 flex flex-col items-start">
+          <Link to="/" className="flex items-center mb-4 hover:scale-105 transition-transform duration-300 origin-left w-max gap-1">
+            <img src={logoUrl} alt="HackKnight Logo" className="w-10 h-12" />
             <span className="font-display font-bold text-text-primary text-2xl leading-none pt-1">HackKnight</span>                     {/* brand name — replace with <img> logo later */}
           </Link>
           <p className="font-body text-text-secondary text-sm leading-relaxed">Hack Knight is a 48-hour hackathon where students come together to create innovative projects.</p>
@@ -19,10 +19,11 @@ export default function Footer() {
         {/* Navigation column */}
         <div className="flex flex-col">
           <h4 className="font-display text-text-primary mb-4">HackKnight</h4>                         {/* column heading */}
-          <a href="/#faq" className="navbar-link mb-2 text-sm">FAQ</a>                     {/* anchor link — scrolls to #faq section on homepage */}
-          <Link to="/schedule" className="navbar-link mb-2 text-sm">Schedule</Link>        {/* navigates to the /schedule page */}
-          <a href="/#team" className="navbar-link mb-2 text-sm">Team</a>                   {/* anchor link — scrolls to #team section on homepage */}
-          <Link to="/sponsors" className="navbar-link mb-2 text-sm">Sponsors</Link>        {/* navigates to the /sponsors page */}
+          <a href="/#faq"      className="navbar-link mb-2 text-sm">FAQ</a>
+          <a href="/#photos"   className="navbar-link mb-2 text-sm">Past Events</a>
+          <a href="/#schedule" className="navbar-link mb-2 text-sm">Schedule</a>
+          <a href="/#team"     className="navbar-link mb-2 text-sm">Team</a>
+          <Link to="/sponsors" className="navbar-link mb-2 text-sm">Sponsors</Link>
         </div>
 
         {/* Social links column */}

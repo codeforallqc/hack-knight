@@ -33,8 +33,13 @@
   /* Accessibility: disable animations for users who prefer it */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
+      animation-duration: 0ms !important;
+      transition-duration: 0ms !important;
     }
+  }
+
+  /* ── Custom cursors — native cursor hidden; React overlay takes over ── */
+  *, *::before, *::after {
+    cursor: none !important;
   }
 }

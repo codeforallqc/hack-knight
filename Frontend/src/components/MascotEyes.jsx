@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { animate } from 'motion/react';
-import logoBaseSvg from '../assets/logobase.svg';
+import logoBaseSvg from '../assets/brand/logobase.svg';
 
 // ── Eye geometry (% of logo SVG viewBox 2622 × 3544) ──────────────────────
 const LEFT_EYE = { cx: 29.83, cy: 67.70 };

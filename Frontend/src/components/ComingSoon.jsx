@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import MascotEyes from './MascotEyes';
 
 export default function ComingSoon() {
   useEffect(() => {
@@ -23,6 +24,10 @@ export default function ComingSoon() {
         <p className="font-body text-text-secondary text-base max-w-xl text-center mx-auto">
           We're putting the finishing touches on registration. Check back soon!
         </p>
+      </div>
+
+      <div className="flex justify-center mt-12">
+        <MascotEyes />
       </div>
     </section>
   );

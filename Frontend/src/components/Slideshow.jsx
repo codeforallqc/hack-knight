@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { motion } from "motion/react";
 
 // ─── Parent variant (the grid wrapper) ───────────────────────────────────────
@@ -20,13 +21,80 @@ const photoVariants = {
   exit:   { opacity: 0, y: -10, scale: 0.97 },  // exits upward and fades
 };
 
+// ─── ParallaxPhoto ────────────────────────────────────────────────────────────
+// Wraps each photo in a perspective container and applies a 3-D skew/tilt based
+// on where the cursor is relative to the card centre.
+function ParallaxPhoto({ photo, index, year, onPhotoClick, isActive }) {
+  const cardRef = useRef(null);
+  const frameRef = useRef(null); // rAF handle
+
+  function handleMouseMove(e) {
+    if (frameRef.current) cancelAnimationFrame(frameRef.current);
+
+    frameRef.current = requestAnimationFrame(() => {
+      const el = cardRef.current;
+      if (!el) return;
+
+      const rect = el.getBoundingClientRect();
+      // Normalised position: -1 … +1 relative to card centre
+      const nx = ((e.clientX - rect.left) / rect.width  - 0.5) * 2;
+      const ny = ((e.clientY - rect.top)  / rect.height - 0.5) * 2;
+
+      // Max tilt in degrees
+      const MAX = 5;
+      const rotateY =  nx * MAX;   // left→right tilt
+      const rotateX = -ny * MAX;   // top→bottom tilt (inverted so it lifts)
+
+      el.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.04,1.04,1.04)`;
+    });
+  }
+
+  function handleMouseLeave() {
+    if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    const el = cardRef.current;
+    if (el) el.style.transform = "perspective(600px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)";
+  }
+
+  return (
+    // Outer motion.div handles entry/exit animation variants
+    <motion.div
+      variants={photoVariants}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      // perspective container so children render in 3-D space — no border here
+      style={{ perspective: "600px" }}
+    >
+      {/* Inner tilt layer — border/radius/overflow live here so they rotate with the card */}
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transition: "transform 0.12s ease-out",
+          transformStyle: "preserve-3d",
+          willChange: "transform",
+        }}
+        className={`rounded-card overflow-hidden bg-surface cursor-zoom-in transition-all duration-300 hover:shadow-glow hover:border-ultraviolet/40 ${isActive ? "border-transparent border" : "border border-border"}`}
+        data-cursor="pointer"
+      >
+        <motion.img
+          layoutId={`gallery-${year}-${index}`}
+          onClick={() => onPhotoClick && onPhotoClick(photo, index)}
+          src={photo.src}
+          alt={photo.alt}
+          className="w-full h-36 sm:h-48 md:h-64 object-cover block"
+        />
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── Slideshow ────────────────────────────────────────────────────────────────
 // Props:
 //   year      — string label e.g. "2024"
 //   photos    — array of { src, alt }
 //   direction — +1 or -1 (kept for future use / dot clicks)
 //   onPhotoClick — callback to trigger the modal
-export default function Slideshow({ year, photos, onPhotoClick }) {
+export default function Slideshow({ year, photos, onPhotoClick, activePhoto }) {
   return (
     // motion.div is the grid parent — it holds the stagger orchestration.
     // `initial`, `animate`, `exit` here match the keys in gridVariants.
@@ -46,21 +114,13 @@ export default function Slideshow({ year, photos, onPhotoClick }) {
       {/* Responsive photo grid: 2 cols on mobile, 3 on tablet/desktop */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
         {photos.map((photo, i) => (
-          // motion.img inherits the "enter" / "center" / "exit" variant names
-          // from the parent — no need to re-declare initial/animate/exit here.
-          // It just needs `variants={photoVariants}` to know what to do with those names.
-          <motion.img
+          <ParallaxPhoto
             key={i}
-            layoutId={`gallery-${year}-${i}`}
-            onClick={() => onPhotoClick && onPhotoClick(photo, i)}
-            src={photo.src}
-            alt={photo.alt}
-            variants={photoVariants}
-            transition={{
-              duration: 0.4,
-              ease: "easeOut",
-            }}
-            className="w-full h-36 sm:h-48 md:h-64 object-cover rounded-card border border-border bg-surface will-change-transform cursor-zoom-in hover:opacity-80 hover:scale-[1.02] transition-transform"
+            photo={photo}
+            index={i}
+            year={year}
+            onPhotoClick={onPhotoClick}
+            isActive={activePhoto?.year === year && activePhoto?.idx === i}
           />
         ))}
       </div>

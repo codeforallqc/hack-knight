@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import CustomCursor from "./components/CustomCursor";
 import Home from "./pages/Home";
 import Schedule from "./pages/SchedulePage";
 import Sponsors from "./pages/SponsorsPage";
@@ -42,6 +43,7 @@ function AppContent() {
 
   return (
     <>
+      <CustomCursor />
       <Navbar />
       <AnimatePresence mode="wait">
         <Routes key={location.pathname} location={location}>

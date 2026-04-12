@@ -35,6 +35,9 @@
     @apply transition-all duration-300 ease-brand hover:-translate-y-1
            flex items-center justify-center p-4 sm:p-6
            grayscale hover:grayscale-0;
+    &:hover {
+      filter: grayscale(0) drop-shadow(0 0 14px rgba(255, 255, 255, 0.55));
+    }
   }
 
   /* ── Sponsors Page ────────────────────────────────── */
@@ -76,7 +79,7 @@
     @apply bg-surface border border-border rounded-card shadow-card
            flex flex-col items-center justify-center gap-4 p-6
            transition-all duration-300 ease-brand
-           hover:-translate-y-1 grayscale hover:grayscale-0;
+           hover:-translate-y-1 grayscale hover:grayscale-0 hover:shadow-glow hover:border-ultraviolet/40;
   }
 
   /* Tier colour accents on hover */
@@ -165,7 +168,36 @@
 
   .navbar-link {
     @apply font-mono text-text-secondary hover:text-text-primary
-           transition-colors duration-200 ease-brand;
+           transition-all duration-300 ease-brand
+           relative pb-0.5;
+  }
+
+  /* Animated underline — hidden by default */
+  .navbar-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: theme('colors.ultraviolet');
+    box-shadow: 0 0 8px theme('colors.ultraviolet');
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity   0.3s ease;
+    opacity: 0;
+  }
+
+  /* Active tab: white text + glowing purple underline */
+  .navbar-link-active {
+    @apply text-text-primary;
+  }
+
+  .navbar-link-active::after {
+    transform: scaleX(1);
+    opacity: 1;
   }
 
   /* Desktop nav elements: visible on md+, hidden on mobile */
@@ -188,7 +220,15 @@
     display: none;
   }
 
-  @media (max-width: 767px) {
+  /* Logo: centered on mobile/tablet, left-aligned on desktop */
+  .navbar-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    transform-origin: center;
+  }
+
+  @media (max-width: 1399px) {
     .navbar-desktop-links,
     .navbar-desktop-register {
       display: none !important;
@@ -200,6 +240,26 @@
 
     .mobile-nav-menu {
       display: block;
+    }
+
+    /* Hide wordmark and keep logo icon centered on mobile/tablet */
+    .navbar-wordmark {
+      display: none;
+    }
+  }
+
+  /* At 1400px+, show wordmark and switch logo to normal flex flow */
+  @media (min-width: 1400px) {
+    .navbar-wordmark {
+      display: inline;
+    }
+
+    .navbar-logo {
+      position: relative;
+      left: auto;
+      transform: none;
+      transform-origin: left;
+      margin-left: 7rem; /* clears the 100px MLH badge */
     }
   }
 

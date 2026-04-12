@@ -65,7 +65,7 @@ export default function PhotoGallery() {
         </button>
 
         {/* Sliding viewport */}
-        <div className="relative w-full overflow-hidden px-12 md:px-0">
+        <div className="relative w-full overflow-hidden px-12 md:px-5 py-2">
           <AnimatePresence mode="wait" custom={direction}>
             <Slideshow
               key={current.year}
@@ -73,6 +73,7 @@ export default function PhotoGallery() {
               photos={current.photos}
               direction={direction}
               onPhotoClick={(photo, idx) => setActivePhoto({ photo, year: current.year, idx })}
+              activePhoto={activePhoto}
             />
           </AnimatePresence>
         </div>

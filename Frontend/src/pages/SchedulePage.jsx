@@ -18,39 +18,39 @@ import {
  * 2. Lane Re-use: Once an event ends, its lane is immediately available for the next one.
  * 3. Buffer Protection: Short events "reserve" their lane for 45 mins to prevent visual crush.
  */
-function packEvents(events) {
+function packEvents(events) { // this function packs the events into lanes
   if (!events.length) return [];
 
-  const sorted = [...events].sort((a, b) =>
+  const sorted = [...events].sort((a, b) => // this function sorts the events by their start hour
     a.startHour - b.startHour ||
     scheduleEvents.indexOf(a) - scheduleEvents.indexOf(b)
   );
 
-  const packed = [];
-  const lanesUsedInClump = [];
+  const packed = []; // this array is used to store the packed events
+  const lanesUsedInClump = []; // this array is used to store the lanes that are used in the clump
 
-  sorted.forEach(evt => {
+  sorted.forEach(evt => { // this function iterates over the sorted events
     let laneIdx = -1;
     const start = evt.startHour;
     const isShort = (evt.endHour - evt.startHour) < 0.5;
     const bookingEnd = isShort ? Math.max(evt.endHour, start + 0.75) : evt.endHour;
 
-    for (let i = 0; i < lanesUsedInClump.length; i++) {
-      if (start >= lanesUsedInClump[i]) { laneIdx = i; break; }
+    for (let i = 0; i < lanesUsedInClump.length; i++) { // this function iterates over the lanes that are used in the clump
+      if (start >= lanesUsedInClump[i]) { laneIdx = i; break; } // this function checks if the start hour is greater than or equal to the end hour
     }
 
-    if (laneIdx === -1) {
+    if (laneIdx === -1) { // this function checks if the lane index is -1
       laneIdx = lanesUsedInClump.length;
       lanesUsedInClump.push(bookingEnd);
-    } else {
+    } else { // this function updates the lane index
       lanesUsedInClump[laneIdx] = bookingEnd;
     }
 
-    packed.push({ event: evt, laneIdx, totalLanes: 0 });
+    packed.push({ event: evt, laneIdx, totalLanes: 0 }); // this function pushes the packed event into the packed array
   });
 
-  return packed.map(p => {
-    const concurrent = packed.filter(other => {
+  return packed.map(p => { // this function maps the packed events to the packed array
+    const concurrent = packed.filter(other => { // this function filters the packed events to find the concurrent events
       const pStart = p.event.startHour;
       const pEnd = Math.max(p.event.endHour, pStart + 0.1);
       const oStart = other.event.startHour;
@@ -58,20 +58,20 @@ function packEvents(events) {
       return pStart < oEnd && oStart < pEnd;
     });
 
-    const maxLaneIdxAcrossGroup = Math.max(...concurrent.map(c => c.laneIdx), 0);
-    const totalLanesForGroup = maxLaneIdxAcrossGroup + 1;
+    const maxLaneIdxAcrossGroup = Math.max(...concurrent.map(c => c.laneIdx), 0); // this function finds the maximum lane index across the concurrent events
+    const totalLanesForGroup = maxLaneIdxAcrossGroup + 1; // this function calculates the total number of lanes for the group
 
     let laneSpan = 1;
-    for (let l = p.laneIdx + 1; l < totalLanesForGroup; l++) {
-      if (!concurrent.some(c => c.laneIdx === l)) laneSpan++;
+    for (let l = p.laneIdx + 1; l < totalLanesForGroup; l++) { // this function iterates over the lanes that are used in the group
+      if (!concurrent.some(c => c.laneIdx === l)) laneSpan++; // this function checks if the lane index is not used in the group
       else break;
     }
 
-    return { ...p, totalLanes: totalLanesForGroup, laneSpan };
+    return { ...p, totalLanes: totalLanesForGroup, laneSpan }; // this function returns the packed event with the total number of lanes and the lane span
   });
 }
 
-function getRangeLabel(start, end) {
+function getRangeLabel(start, end) { // this function gets the range label
   const fmt = h => formatFullTime(h).replace(':00 ', '').replace(' ', '');
   return start === end ? fmt(start) : `${fmt(start)}–${fmt(end)}`;
 }
@@ -158,11 +158,11 @@ export default function SchedulePage() {
             ))}
 
             {/* Event cards — one pack per day column */}
-            {scheduleDays.map((day, dIdx) => {
-              const dayEvents = scheduleEvents.filter(e => e.day === day.key);
-              const packed = packEvents(dayEvents);
+            {scheduleDays.map((day, dIdx) => { // this function maps the schedule days to the schedule days array
+              const dayEvents = scheduleEvents.filter(e => e.day === day.key); // this function filters the schedule events to find the events that are in the current day
+              const packed = packEvents(dayEvents); // this function packs the events into lanes
 
-              return packed.map((item, pIdx) => {
+              return packed.map((item, pIdx) => { // this function maps the packed events to the packed array
                 const { event, laneIdx, totalLanes } = item;
                 const startRow = getRow(event.startHour);
                 const endRow = getRow(event.endHour);
