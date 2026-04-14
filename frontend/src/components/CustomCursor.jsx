@@ -7,7 +7,13 @@ const POINTER_SELECTOR =
 // Spring config for the morph transition between cursor states
 const morphSpring = { type: 'spring', stiffness: 500, damping: 28, mass: 0.5 };
 
+// Only render the custom cursor on devices with a precise pointer (mouse/trackpad).
+// On touch/mobile devices we return null so the native tap indicator is preserved.
+const hasFinePointer = window.matchMedia('(pointer: fine)').matches;
+
 export default function CustomCursor() {
+  if (!hasFinePointer) return null;
+
   // useMotionValue drives the div position — updates bypass React re-renders entirely
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);

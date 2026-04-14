@@ -38,8 +38,10 @@
     }
   }
 
-  /* ── Custom cursors — native cursor hidden; React overlay takes over ── */
-  *, *::before, *::after {
-    cursor: none !important;
+  /* ── Custom cursors — only hide native cursor on pointer (mouse) devices ── */
+  @media (pointer: fine) {
+    *, *::before, *::after {
+      cursor: none !important;
+    }
   }
 }
