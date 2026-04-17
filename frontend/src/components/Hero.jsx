@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, useSpring } from 'motion/react';
 import CountdownTimer from './CountdownTimer';
 import MascotEyes from './MascotEyes';
 import hillsBgSvg  from '../assets/brand/hillsbg.svg';
@@ -10,8 +10,9 @@ import towerSvg    from '../assets/brand/tower.svg';
 
 export default function Hero() {
   const { scrollY } = useScroll();
-  const hillsGroupY = useTransform(scrollY, (v) => v * 0.30);
-  const contentY = useTransform(scrollY, (v) => v * 0.90);
+  const smoothScrollY = useSpring(scrollY, { stiffness: 90, damping: 20, mass: 0.5 });
+  const hillsGroupY = useTransform(smoothScrollY, (v) => v * 0.30);
+  const contentY = useTransform(smoothScrollY, (v) => v * 0.90);
 
   const leftColRef = useRef(null);
   const [towerHeight, setTowerHeight] = useState(undefined);
@@ -68,7 +69,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="hero-section relative overflow-hidden flex flex-col pt-24 lg:pt-32 pb-8 lg:pb-32 2xl:pb-[22vh]"
+      className="hero-section relative overflow-hidden flex flex-col pt-24 lg:pt-32 pb-8 lg:pb-32 2xl:pb-[22vh] bg-void"
       style={{ isolation: 'isolate' }}
     >
       {/* z:0 — Back hill + Knights, slow parallax (hidden on mobile) */}

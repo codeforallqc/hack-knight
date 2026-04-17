@@ -144,10 +144,10 @@
     @apply font-body text-text-secondary text-base mb-10;
   }
 
-  /* Mobile: tighten section spacing */
+  /* Mobile: tighten section spacing — top must clear the fixed navbar (~4rem tall) */
   @media (max-width: 639px) {
     .section-wrapper {
-      padding-top: 3rem;
+      padding-top: 5rem;
       padding-bottom: 3rem;
     }
 

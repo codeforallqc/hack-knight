@@ -38,8 +38,22 @@
     }
   }
 
-  /* ── Custom cursors — native cursor hidden; React overlay takes over ── */
+  /* ── Remove tap highlight flash on mobile ── */
   *, *::before, *::after {
-    cursor: none !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── Custom cursors — only hide native cursor on pointer (mouse) devices ── */
+  @media (pointer: fine) {
+    *, *::before, *::after {
+      cursor: none !important;
+    }
+  }
+
+  /* ── Hide any residual cursor on touch/coarse devices ── */
+  @media (pointer: coarse) {
+    *, *::before, *::after {
+      cursor: none !important;
+    }
   }
 }
