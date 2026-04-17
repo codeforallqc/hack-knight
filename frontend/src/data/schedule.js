@@ -11,13 +11,11 @@ export const scheduleEvents = [
   { day: "fri", startHour: 11, endHour: 12, label: "Opening Ceremony begins", color: "violet" },
   { day: "fri", startHour: 12, endHour: 13, label: "Hacking Begins", color: "green" },
   { day: "fri", startHour: 13, endHour: 14, label: "Lunch", color: "orange" },
-  { day: "fri", startHour: 16, endHour: 17, label: "Werewolf Game", color: "green" },
   { day: "fri", startHour: 19, endHour: 20, label: "Dinner", color: "orange" },
   { day: "fri", startHour: 23, endHour: 24, label: "Midnight Ramen", color: "orange" },
 
   // ── Saturday (day 2) ────────────────────────────────
   { day: "sat", startHour: 9, endHour: 10, label: "Breakfast", color: "orange" },
-  { day: "sat", startHour: 12, endHour: 13, label: "Path-Port Quest", color: "green" },
   { day: "sat", startHour: 13, endHour: 14, label: "Lunch", color: "orange" },
   { day: "sat", startHour: 18, endHour: 19, label: "Dinner", color: "orange" },
   { day: "sat", startHour: 23, endHour: 24, label: "Midnight Ramen", color: "orange" },
