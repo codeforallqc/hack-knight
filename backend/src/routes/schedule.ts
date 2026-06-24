@@ -1,118 +1,147 @@
 import { Router, Request, Response } from "express";
-import db from "../db/database";
-import { Event, CreateEventBody, UpdateEventBody } from "../types";
-import { authenticateAdmin } from "../middleware/auth";
+import { supabase } from "../db/supabase.js";
+import {
+  CreateScheduleEventBody,
+  UpdateScheduleEventBody,
+} from "../types.js";
+import { authenticateAdmin } from "../middleware/auth.js";
 
 const scheduleRouter = Router();
 
-scheduleRouter.get("/", (req, res) => {
-  try {
-    const events = db
-      .prepare("SELECT * FROM events ORDER BY start_time ASC")
-      .all() as Event[];
+// GET /api/schedule  (public)
+scheduleRouter.get("/", async (_req: Request, res: Response) => {
+  const { data, error } = await supabase
+    .from("schedule_events")
+    .select("*")
+    .order("start_hour", { ascending: true });
 
-    res.json(events);
-  } catch {
+  if (error) {
     res.status(500).json({ message: "Failed to fetch schedule" });
+    return;
   }
+  res.json(data);
 });
+
+// GET /api/schedule/days  (public)
+scheduleRouter.get("/days", async (_req: Request, res: Response) => {
+  const { data, error } = await supabase
+    .from("schedule_days")
+    .select("*")
+    .order("sort_order", { ascending: true });
+
+  if (error) {
+    res.status(500).json({ message: "Failed to fetch days" });
+    return;
+  }
+  res.json(data);
+});
+
+// POST /api/schedule  (admin)
 scheduleRouter.post(
   "/",
   authenticateAdmin,
-  (req: Request<{}, {}, CreateEventBody>, res: Response) => {
-    if (!req.body.title || !req.body.start_time) {
+  async (req: Request<{}, {}, CreateScheduleEventBody>, res: Response) => {
+    const { day, start_hour, end_hour, label } = req.body;
+    if (!day || start_hour == null || end_hour == null || !label) {
       res.status(422).json({ message: "Missing required field" });
       return;
     }
 
-    try {
-      const stmt = db.prepare(`
-        INSERT INTO events (title, description, start_time, end_time, location) VALUES (@title, @description, @start_time, @end_time, @location)
-        `);
+    const { data, error } = await supabase
+      .from("schedule_events")
+      .insert({
+        day,
+        start_hour,
+        end_hour,
+        label,
+        color: req.body.color ?? "violet",
+        sort_order: req.body.sort_order ?? 0,
+      })
+      .select()
+      .single();
 
-      const result = stmt.run({
-        title: req.body.title,
-        description: req.body.description ?? null,
-        start_time: req.body.start_time,
-        end_time: req.body.end_time ?? null,
-        location: req.body.location ?? null,
-      });
-
-      const created = db
-        .prepare("SELECT * FROM events  WHERE id = ?")
-        .get(result.lastInsertRowid) as Event;
-
-      res.status(201).json(created);
-    } catch (error) {
+    if (error) {
       res.status(500).json({ message: "Server error" });
+      return;
     }
+    res.status(201).json(data);
   },
 );
+
+// PUT /api/schedule/:id  (admin)
 scheduleRouter.put(
   "/:id",
   authenticateAdmin,
-  (req: Request<{ id: string }, {}, UpdateEventBody>, res: Response) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      res.status(400).json({ message: "Invalid ID" });
-      return;
-    }
+  async (
+    req: Request<{ id: string }, {}, UpdateScheduleEventBody>,
+    res: Response,
+  ) => {
+    const { data, error } = await supabase
+      .from("schedule_events")
+      .update(req.body)
+      .eq("id", req.params.id)
+      .select()
+      .maybeSingle();
 
-    if (!req.body.title || !req.body.start_time) {
-      res.status(422).json({ message: "Missing required fields" });
-      return;
-    }
-
-    try {
-      const stmt = db.prepare(`
-        UPDATE events SET title = @title, description = @description, start_time = @start_time, end_time = @end_time, location = @location WHERE id = @id
-      `);
-      const result = stmt.run({
-        title: req.body.title,
-        description: req.body.description ?? null,
-        start_time: req.body.start_time,
-        end_time: req.body.end_time ?? null,
-        location: req.body.location ?? null,
-        id: req.params.id,
-      });
-
-      if (result.changes === 0) {
-        res.status(404).json({ message: "Event not found" });
-        return;
-      }
-
-      const updated = db
-        .prepare("SELECT * FROM events WHERE id = ?")
-        .get(id) as Event;
-
-      res.status(200).json(updated);
-    } catch {
+    if (error) {
       res.status(500).json({ message: "Server error" });
+      return;
     }
+    if (!data) {
+      res.status(404).json({ message: "Event not found" });
+      return;
+    }
+    res.json(data);
   },
 );
+
+// PUT /api/schedule/days/:key  (admin)
+scheduleRouter.put(
+  "/days/:key",
+  authenticateAdmin,
+  async (
+    req: Request<{ key: string }, {}, { label: string }>,
+    res: Response,
+  ) => {
+    if (!req.body.label) {
+      res.status(422).json({ message: "Label is required" });
+      return;
+    }
+    const { data, error } = await supabase
+      .from("schedule_days")
+      .update({ label: req.body.label })
+      .eq("key", req.params.key)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      res.status(500).json({ message: "Server error" });
+      return;
+    }
+    if (!data) {
+      res.status(404).json({ message: "Day not found" });
+      return;
+    }
+    res.json(data);
+  },
+);
+
+// DELETE /api/schedule/:id  (admin)
 scheduleRouter.delete(
   "/:id",
   authenticateAdmin,
-  (req: Request<{ id: string }>, res: Response) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      res.status(400).json({ message: "Invalid ID" });
+  async (req: Request<{ id: string }>, res: Response) => {
+    const { error } = await supabase
+      .from("schedule_events")
+      .delete()
+      .eq("id", req.params.id);
+
+    if (error) {
+      res.status(500).json({ message: "Server error" });
       return;
     }
-    try {
-      const stmt = db.prepare("DELETE FROM events WHERE id = ?");
-      const result = stmt.run(id);
-
-      if (result.changes === 0) {
-        res.status(404).json({ message: "Event not found." });
-        return;
-      }
-
-      res.status(204).send();
-    } catch {
-      res.status(500).json({ message: "Server error" });
-    }
+    res.status(204).send();
   },
 );
+
 export default scheduleRouter;

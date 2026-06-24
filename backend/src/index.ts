@@ -1,14 +1,19 @@
 import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
-import db from "./db/database.js";
 import authRouter from "./routes/auth.js";
 import scheduleRouter from "./routes/schedule.js";
 import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const requiredEnvVars = ["JWT_SECRET", "ADMIN_PASSWORD_HASH", "FRONTEND_URL"];
+const requiredEnvVars = [
+  "JWT_SECRET",
+  "ADMIN_PASSWORD_HASH",
+  "FRONTEND_URL",
+  "SUPABASE_URL",
+  "SUPABASE_SECRET_KEY",
+];
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
     console.error(`Missing required environment variable: ${envVar}`);
@@ -39,5 +44,4 @@ app.use("/api/schedule", scheduleRouter);
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log("Database connected:", db.name);
 });
