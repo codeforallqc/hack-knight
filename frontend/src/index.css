@@ -1,5 +1,77 @@
 @import "tailwindcss";
-@config "../tailwind.config.js";
+@import "./styles/components.css";
+
+/* ── Design tokens (Tailwind v4 native theme) ─────────────────
+   Replaces the legacy tailwind.config.js. Each custom property
+   maps to a utility namespace, e.g. --color-ultraviolet → bg-ultraviolet,
+   --radius-card → rounded-card, --animate-marquee → animate-marquee. */
+@theme {
+  /* Colors */
+  --color-void: #1e1e24;           /* page background */
+  --color-surface: #12121a;        /* cards, panels, navbar */
+  --color-border: #71717a;         /* subtle borders and dividers */
+  --color-ultraviolet: #a855f7;    /* primary accent / CTA */
+  --color-cyber-teal: #2dd4bf;     /* hacking / workshops accent */
+  --color-signal-yellow: #fbbf24;  /* food / logistics accent */
+  --color-electric-blue: #3b82f6;  /* check-in / admin accent */
+  --color-violet-light: #c084fc;   /* hover state for primary */
+  --color-violet-dark: #7c3aed;    /* pressed / active state */
+  --color-text-primary: #f4f4f5;   /* headings and important text */
+  --color-text-secondary: #a1a1aa; /* body copy, descriptions */
+  --color-text-muted: #52525b;     /* placeholders, disabled */
+
+  /* Typography */
+  --font-display: "Space Grotesk", sans-serif; /* H1, H2, logo, timer */
+  --font-body: "Lexend", sans-serif;           /* paragraphs, labels, nav */
+  --font-mono: "JetBrains Mono", monospace;    /* countdown digits, code */
+
+  --text-hero: 7rem;
+  --text-hero--line-height: 1.1;
+  --text-hero--letter-spacing: -0.02em;
+  --text-section: 2.25rem;
+  --text-section--line-height: 1.2;
+  --text-section--letter-spacing: -0.01em;
+  --text-card: 1.125rem;
+  --text-card--line-height: 1.6;
+
+  /* Spacing */
+  --spacing-section: 6rem;     /* vertical padding between page sections */
+  --spacing-container: 1.5rem; /* horizontal page gutters */
+
+  /* Border radius */
+  --radius-card: 1rem;    /* cards, panels */
+  --radius-pill: 9999px;  /* buttons, badges */
+
+  /* Shadows */
+  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.4); /* ultraviolet glow on CTAs */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);    /* card elevation */
+
+  /* Easing — use on all transitions */
+  --ease-brand: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Animations */
+  --animate-marquee: marquee 30s linear infinite;       /* sponsor carousel */
+  --animate-pulse-glow: pulseGlow 2s ease-in-out infinite; /* CTA button glow */
+  --animate-fade-up: fadeUp 0.6s ease forwards;         /* scroll reveal */
+  --animate-fade-in: fadeIn 0.4s ease forwards;         /* general fade */
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 12px #7c3aed; }
+    50% { box-shadow: 0 0 28px #7c3aed, 0 0 60px #7c3aed55; }
+  }
+  @keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+}
 
 @font-face {
   font-family: "Space Grotesk";
@@ -8,8 +80,6 @@
   font-style: normal;
   font-display: swap;
 }
-
-@import "./styles/components.css";
 
 /* Base resets */
 @layer base {

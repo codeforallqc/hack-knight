@@ -1,4 +1,3 @@
-@reference "tailwindcss";
 @layer components {
 
   /* ── Buttons ─────────────────────────────────────── */
@@ -8,7 +7,7 @@
            px-6 py-3 rounded-card transition-all duration-300 ease-brand uppercase
            hover:bg-violet-light hover:shadow-glow
            active:bg-violet-dark
-           animate-pulseGlow;
+           animate-pulse-glow;
   }
 
   .btn-outline {
@@ -181,8 +180,8 @@
     right: 0;
     height: 2px;
     border-radius: 999px;
-    background: theme('colors.ultraviolet');
-    box-shadow: 0 0 8px theme('colors.ultraviolet');
+    background: var(--color-ultraviolet);
+    box-shadow: 0 0 8px var(--color-ultraviolet);
     transform: scaleX(0);
     transform-origin: center;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -395,19 +394,19 @@
 
   /* Electric Blue - Check-in/Check-out*/
   .schedule-event.color-cyan {
-    @apply bg-electricBlue/50 border-electricBlue/30 border-l-electricBlue;
+    @apply bg-electric-blue/50 border-electric-blue/30 border-l-electric-blue;
     &:hover { @apply shadow-[0_0_15px_rgba(59,130,246,0.4)]; }
   }
 
   /* Cyber Teal - Workshops*/
   .schedule-event.color-green {
-    @apply bg-cyberTeal/50 border-cyberTeal/30 border-l-cyberTeal;
+    @apply bg-cyber-teal/50 border-cyber-teal/30 border-l-cyber-teal;
     &:hover { @apply shadow-[0_0_15px_rgba(45,212,191,0.4)]; }
   }
 
   /* Signal Yellow - Meals*/
   .schedule-event.color-orange {
-    @apply bg-signalYellow/50 border-signalYellow/30 border-l-signalYellow;
+    @apply bg-signal-yellow/50 border-signal-yellow/30 border-l-signal-yellow;
     &:hover { @apply shadow-[0_0_15px_rgba(251,191,36,0.4)]; }
   }
 
