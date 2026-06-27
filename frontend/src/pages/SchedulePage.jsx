@@ -3,12 +3,8 @@
 // Uses standardized CSS from src/styles/components.css
 
 import { useEffect } from 'react';
-import {
-  scheduleEvents,
-  scheduleDays,
-  formatHour,
-  formatFullTime,
-} from '../data/schedule';
+import { formatHour, formatFullTime } from '../data/schedule';
+import { useSchedule } from '../hooks/useSchedule';
 
 /**
  * SMART PACKING ALGORITHM
@@ -23,7 +19,7 @@ function packEvents(events) { // this function packs the events into lanes
 
   const sorted = [...events].sort((a, b) => // this function sorts the events by their start hour
     a.startHour - b.startHour ||
-    scheduleEvents.indexOf(a) - scheduleEvents.indexOf(b)
+    events.indexOf(a) - events.indexOf(b)
   );
 
   const packed = []; // this array is used to store the packed events
@@ -79,6 +75,8 @@ function getRangeLabel(start, end) { // this function gets the range label
 
 
 export default function SchedulePage() {
+  const { events: scheduleEvents, days: scheduleDays } = useSchedule(); // Fetch from API (static fallback)
+
   // Scroll to top on mount
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, []);
 

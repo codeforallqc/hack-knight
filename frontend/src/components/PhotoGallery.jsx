@@ -1,22 +1,23 @@
 import { useState, useEffect } from "react";  // added useEffect
 import { AnimatePresence, motion } from "motion/react";
 
-import GALLERY_DATA from "../data/gallery";
 import Slideshow from "./Slideshow";
+import { useGallery } from "../hooks/useGallery";
 
 export default function PhotoGallery() {
+  const { galleryData } = useGallery(); // Fetch from API (static fallback)
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [activePhoto, setActivePhoto] = useState(null);
 
   function handleNext() {
     setDirection(1);
-    setIndex((prev) => (prev + 1) % GALLERY_DATA.length);
+    setIndex((prev) => (prev + 1) % galleryData.length);
   }
 
   function handlePrev() {
     setDirection(-1);
-    setIndex((prev) => (prev - 1 + GALLERY_DATA.length) % GALLERY_DATA.length);
+    setIndex((prev) => (prev - 1 + galleryData.length) % galleryData.length);
   }
 
   // Auto-advance every 10 seconds
@@ -45,7 +46,9 @@ export default function PhotoGallery() {
     };
   }, [activePhoto]);
 
-  const current = GALLERY_DATA[index];
+  const current = galleryData[index] ?? galleryData[0];
+
+  if (!current) return null;
 
   return (
     <section id="photos" className="section-wrapper py-24">

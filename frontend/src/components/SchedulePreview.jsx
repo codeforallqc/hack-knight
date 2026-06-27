@@ -3,12 +3,8 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  scheduleEvents,
-  scheduleDays,
-  formatHour,
-  formatFullTime,
-} from '../data/schedule';
+import { formatHour, formatFullTime } from '../data/schedule';
+import { useSchedule } from '../hooks/useSchedule';
 
 /**
  * SMART PACKING ALGORITHM
@@ -21,9 +17,9 @@ import {
 function packEvents(events) { // Function to pack events into lanes
   if (!events.length) return []; // Return empty array if no events
 
-  const sorted = [...events].sort((a, b) => // Sort events by start hour, then by index in scheduleEvents
+  const sorted = [...events].sort((a, b) => // Sort events by start hour, then by original order
     a.startHour - b.startHour ||
-    scheduleEvents.indexOf(a) - scheduleEvents.indexOf(b)
+    events.indexOf(a) - events.indexOf(b)
   );
 
   const packed = []; // Array to store packed events
@@ -77,6 +73,7 @@ function getRangeLabel(start, end) { // Format the time range for display
 }
 
 export default function SchedulePreview() { // Component to display the schedule preview
+  const { events: scheduleEvents, days: scheduleDays } = useSchedule(); // Fetch from API (static fallback)
   const [activeDay, setActiveDay] = useState(scheduleDays[0].key); // State to store the active day
 
   const startHours = scheduleEvents.map(e => Math.floor(e.startHour)); // Get the start hours of all events
