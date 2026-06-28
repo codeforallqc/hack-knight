@@ -56,6 +56,8 @@ export interface TeamMember {
   title: string;
   photo_url: string;
   badge_url: string | null;
+  linkedin_url: string | null;
+  github_url: string | null;
   sort_order: number;
   created_at?: string;
 }
@@ -63,6 +65,8 @@ export interface TeamMember {
 export interface CreateTeamMemberBody {
   name: string;
   title: string;
+  linkedin_url?: string;
+  github_url?: string;
   sort_order?: number;
 }
 
