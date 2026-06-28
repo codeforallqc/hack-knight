@@ -70,9 +70,15 @@ CREATE TABLE team_members (
   title TEXT NOT NULL,
   photo_url TEXT NOT NULL,
   badge_url TEXT,
+  linkedin_url TEXT,
+  github_url TEXT,
   sort_order INT DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Migration (run against existing DB):
+-- ALTER TABLE team_members ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
+-- ALTER TABLE team_members ADD COLUMN IF NOT EXISTS github_url TEXT;
 
 ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read team_members" ON team_members FOR SELECT USING (true);
