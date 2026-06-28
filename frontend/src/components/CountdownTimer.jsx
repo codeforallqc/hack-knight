@@ -35,7 +35,7 @@ export default function CountdownTimer() {
   return ( // this is the countdown timer component
     <div className="hero-buttons flex w-full mt-2 mb-0"> 
       <div // this is the border around the countdown timer
-        className="border border-ultraviolet rounded-[1.25rem] sm:rounded-[2rem] px-3 py-2.5 sm:px-8 sm:py-5 bg-void/80"
+        className="border border-ultraviolet rounded-[1.25rem] sm:rounded-4xl px-3 py-2.5 sm:px-8 sm:py-5 bg-void/80"
       >
         <div className="flex gap-1.5 sm:gap-6 items-center justify-center">
           {/* MONTHS */}

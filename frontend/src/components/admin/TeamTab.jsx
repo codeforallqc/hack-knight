@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { apiGet, apiDelete, apiUpload, compressImage } from "../../lib/api";
 
-const EMPTY_MEMBER = { name: "", title: "", sort_order: 0 };
+const EMPTY_MEMBER = { name: "", title: "", linkedin_url: "", github_url: "", sort_order: 0 };
 
 export default function TeamTab() {
   const [members, setMembers] = useState([]);
@@ -43,6 +43,8 @@ export default function TeamTab() {
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("title", form.title);
+      formData.append("linkedin_url", form.linkedin_url);
+      formData.append("github_url", form.github_url);
       const compressedPhoto = await compressImage(photo);
       formData.append("photo", compressedPhoto, photo.name);
       if (badge) {
@@ -74,7 +76,7 @@ export default function TeamTab() {
 
   function openEdit(member) {
     setEditing(member);
-    setEditForm({ name: member.name, title: member.title, sort_order: member.sort_order ?? 0 });
+    setEditForm({ name: member.name, title: member.title, linkedin_url: member.linkedin_url ?? "", github_url: member.github_url ?? "", sort_order: member.sort_order ?? 0 });
     setEditPhoto(null);
     setEditBadge(null);
     setError(null);
@@ -92,6 +94,8 @@ export default function TeamTab() {
       const formData = new FormData();
       formData.append("name", editForm.name);
       formData.append("title", editForm.title);
+      formData.append("linkedin_url", editForm.linkedin_url);
+      formData.append("github_url", editForm.github_url);
       formData.append("sort_order", String(editForm.sort_order));
       if (editPhoto) {
         const compressed = await compressImage(editPhoto);
@@ -150,6 +154,18 @@ export default function TeamTab() {
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
           required
+        />
+        <input
+          placeholder="LinkedIn URL (optional)"
+          type="url"
+          value={form.linkedin_url}
+          onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })}
+        />
+        <input
+          placeholder="GitHub URL (optional)"
+          type="url"
+          value={form.github_url}
+          onChange={(e) => setForm({ ...form, github_url: e.target.value })}
         />
         <label>
           Photo*{" "}
@@ -226,6 +242,18 @@ export default function TeamTab() {
                 value={editForm.title}
                 onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
                 required
+              />
+              <input
+                placeholder="LinkedIn URL (optional)"
+                type="url"
+                value={editForm.linkedin_url}
+                onChange={(e) => setEditForm({ ...editForm, linkedin_url: e.target.value })}
+              />
+              <input
+                placeholder="GitHub URL (optional)"
+                type="url"
+                value={editForm.github_url}
+                onChange={(e) => setEditForm({ ...editForm, github_url: e.target.value })}
               />
               <label>
                 Display Priority (lower = first){" "}
