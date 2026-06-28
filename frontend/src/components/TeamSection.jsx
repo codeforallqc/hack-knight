@@ -54,13 +54,35 @@ export default function TeamSection() {
               </div>
 
               {/* ── Name & Title — sit BELOW the photo, outside the image block ── */}
-              <div>
+              <div className="flex justify-between">
+                <div>
                 <p className="font-display font-bold text-base text-text-primary">
                   {member.name}
                 </p>
                 <p className="font-body text-sm text-ultraviolet">
                   {member.title}
                 </p>
+                </div>
+                <div className="flex gap-2 items-center">
+                  {member.github && (
+                    <a href={member.github} target="_blank" rel="noreferrer">
+                      <img
+                        src="https://img.icons8.com/ios-filled/50/000000/github.png"
+                        alt="GitHub"
+                        className="w-6 h-6 invert transition-all duration-200 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.85)] hover:scale-110"
+                      />
+                    </a>
+                  )}
+                  {member.linkedin && (
+                    <a href={member.linkedin} target="_blank" rel="noreferrer">
+                      <img
+                        src="https://img.icons8.com/ios-filled/50/000000/linkedin.png"
+                        alt="LinkedIn"
+                        className="w-6 h-6 invert transition-all duration-200 hover:drop-shadow-[0_0_8px_rgba(10,102,194,1)] hover:scale-110"
+                      />
+                    </a>
+                  )}
+                </div>
               </div>
 
             </div>
