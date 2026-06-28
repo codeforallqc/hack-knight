@@ -14,6 +14,8 @@ function mapMember(m) {
     title: m.title,
     photo: m.photo_url,
     badge: m.badge_url,
+    linkedin: m.linkedin_url || null,
+    github: m.github_url || null,
     sortOrder: m.sort_order,
   };
 }
