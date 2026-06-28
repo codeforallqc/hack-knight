@@ -69,7 +69,7 @@ teamRouter.post(
   authenticateAdmin,
   uploadFields,
   async (
-    req: Request<{}, {}, { name: string; title: string; sort_order?: number }>,
+    req: Request<{}, {}, { name: string; title: string; linkedin_url?: string; github_url?: string; sort_order?: number }>,
     res: Response,
   ) => {
     const { name, title } = req.body;
@@ -111,6 +111,8 @@ teamRouter.post(
         title,
         photo_url: photoUrl,
         badge_url: badgeUrl,
+        linkedin_url: req.body.linkedin_url || null,
+        github_url: req.body.github_url || null,
         sort_order: req.body.sort_order ?? 0,
       })
       .select()
@@ -139,7 +141,7 @@ teamRouter.put(
     req: Request<
       { id: string },
       {},
-      { name?: string; title?: string; sort_order?: number }
+      { name?: string; title?: string; linkedin_url?: string; github_url?: string; sort_order?: number }
     >,
     res: Response,
   ) => {
@@ -164,6 +166,10 @@ teamRouter.put(
     if (req.body.title !== undefined) updates.title = req.body.title;
     if (req.body.sort_order !== undefined)
       updates.sort_order = req.body.sort_order;
+    if (req.body.linkedin_url !== undefined)
+      updates.linkedin_url = req.body.linkedin_url || null;
+    if (req.body.github_url !== undefined)
+      updates.github_url = req.body.github_url || null;
 
     const files = req.files as MulterFiles;
     const oldPaths: string[] = [];
