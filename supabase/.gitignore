@@ -1,0 +1,12 @@
+# Supabase
+.branches
+.temp
+
+# Supabase local dev
+supabase/.temp/
+supabase/seed.sql   # only if it contains sensitive seed data
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local
