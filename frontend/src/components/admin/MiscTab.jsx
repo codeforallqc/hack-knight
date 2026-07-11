@@ -4,8 +4,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiGet, apiPut } from "../../lib/api";
-import CountdownTimer from "../CountdownTimer";
-import { Panel, Field, SaveBar, DiffModal } from "./ui";
+import { MLH_BADGE_SRC, MLH_BADGE_ALT } from "../../lib/mlh";
+import CountdownTimer from "../site/CountdownTimer";
+import { Panel, Field, SaveBar, DiffModal, Toggle, ScaledPreview } from "./ui";
 
 const COUNTDOWN_KEY = "countdown_target";
 const MLH_KEY = "mlh_badge_enabled";
@@ -28,38 +29,6 @@ function formatDisplay(value) {
     timeStyle: "short",
   });
 }
-
-/* ── Toggle switch ── */
-
-function Toggle({ id, checked, onChange, label }) {
-  return (
-    <button
-      type="button"
-      id={id}
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-pill border
-        transition-colors duration-150 ease-brand
-        focus-visible:outline-2 focus-visible:outline-ultraviolet focus-visible:outline-offset-2
-        ${
-          checked
-            ? "bg-ultraviolet border-ultraviolet"
-            : "bg-black/30 border-border/40 hover:border-border/60"
-        }`}
-    >
-      <span
-        aria-hidden="true"
-        className={`inline-block h-4 w-4 rounded-pill bg-text-primary
-          transition-transform duration-150 ease-brand
-          ${checked ? "translate-x-6" : "translate-x-1"}`}
-      />
-    </button>
-  );
-}
-
-/* ── Tab ── */
 
 export default function MiscTab({ onDirtyChange }) {
   const [serverSettings, setServerSettings] = useState(null);
@@ -217,21 +186,25 @@ export default function MiscTab({ onDirtyChange }) {
           <p className="admin-help mb-3">
             How the countdown will look after saving.
           </p>
-          {/* overflow-x-auto: the public timer sizes itself to the viewport,
-              so it can be wider than this half-width panel — scroll instead
-              of spilling outside the box. */}
-          <div className="bg-black/20 border border-border/40 rounded-xl py-6 px-4 overflow-x-auto">
-            <div className="w-max mx-auto">
+          <div className="bg-black/20 border border-border/40 rounded-xl py-6 px-4">
+            {/* The public timer sizes itself to the viewport, so it can be
+                wider than this half-width panel — scale it down to fit. */}
+            <ScaledPreview>
               <CountdownTimer targetDate={countdownValue} />
-            </div>
+            </ScaledPreview>
           </div>
-          <p className="admin-help mt-4 flex items-center gap-2">
-            <span
-              className={`w-2 h-2 rounded-pill ${mlhOn ? "bg-cyber-teal" : "bg-text-muted"}`}
-              aria-hidden="true"
+
+          <div className="mt-4 flex items-center gap-4">
+            <img
+              src={MLH_BADGE_SRC}
+              alt={MLH_BADGE_ALT}
+              className={`w-14 shrink-0 transition-all duration-300 ease-brand
+                ${mlhOn ? "" : "grayscale opacity-35"}`}
             />
-            MLH badge {mlhOn ? "shown" : "hidden"} on the public site
-          </p>
+            <p className="admin-help">
+              MLH badge {mlhOn ? "shown" : "hidden"} on the public site
+            </p>
+          </div>
         </Panel>
       </div>
 

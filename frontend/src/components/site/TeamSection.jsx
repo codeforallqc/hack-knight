@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useTeam } from '../hooks/useTeam';
+import { useTeam } from '../../hooks/useTeam';
 
 function MemberCard({ member }) {
   const cardRef = useRef(null);

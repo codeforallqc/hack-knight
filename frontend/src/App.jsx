@@ -7,13 +7,13 @@ import {
   useLocation,
 } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import CustomCursor from "./components/CustomCursor";
+import Navbar from "./components/site/Navbar";
+import Footer from "./components/site/Footer";
+import CustomCursor from "./components/site/CustomCursor";
 import Home from "./pages/Home";
 import Schedule from "./pages/SchedulePage";
 import Sponsors from "./pages/SponsorsPage";
-import ComingSoon from "./components/ComingSoon";
+import ComingSoon from "./components/site/ComingSoon";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPage from "./pages/AdminPage";
 import { isAuthenticated } from "./lib/api";

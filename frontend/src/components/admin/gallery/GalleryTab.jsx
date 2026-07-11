@@ -10,214 +10,14 @@ import {
   apiDelete,
   apiUpload,
   compressImage,
-} from "../../lib/api";
-import { Panel, Field, EmptyState, SaveBar, DiffModal, DragGrid } from "./ui";
+} from "../../../lib/api";
+import { Panel, Field, EmptyState, SaveBar, DiffModal } from "../ui";
+import { useObjectUrls } from "../useObjectUrls";
+import YearPanel from "./YearPanel";
 
 function cloneYears(years) {
   return years.map((y) => ({ ...y, photos: (y.photos ?? []).map((p) => ({ ...p })) }));
 }
-
-/* ── Photo card (inside DragGrid) ── */
-
-function PhotoCard({ photo, onReplace, onRemove, move, index, total }) {
-  return (
-    <div className="group relative">
-      <img
-        src={photo._replacePreview ?? photo.src}
-        alt={photo.alt}
-        className="w-full aspect-square object-cover rounded-xl pointer-events-none select-none"
-        draggable={false}
-      />
-
-      {/* Action overlay */}
-      <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150">
-        <button
-          type="button"
-          className="admin-btn-icon"
-          aria-label="Replace photo"
-          title="Replace photo"
-          onClick={onReplace}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          className="admin-btn-icon admin-btn-icon-danger"
-          aria-label="Delete photo"
-          title="Delete photo"
-          onClick={onRemove}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <path d="M18 6 6 18M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Keyboard-accessible reorder */}
-      <div className="absolute bottom-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150">
-        <button
-          type="button"
-          className="admin-btn-icon"
-          aria-label="Move photo earlier"
-          disabled={index === 0}
-          onClick={() => move(-1)}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          className="admin-btn-icon"
-          aria-label="Move photo later"
-          disabled={index === total - 1}
-          onClick={() => move(1)}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M9 6l6 6-6 6" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Staged markers */}
-      {photo._new && (
-        <span className="admin-chip admin-chip-add absolute bottom-1.5 left-1.5">new</span>
-      )}
-      {photo._replaceFile && !photo._new && (
-        <span className="admin-chip admin-chip-edit absolute bottom-1.5 left-1.5">replaced</span>
-      )}
-    </div>
-  );
-}
-
-/* ── Year panel ── */
-
-function YearPanel({
-  year,
-  onRemoveYear,
-  onStagePhotos,
-  onRemovePhoto,
-  onReplacePhoto,
-  onReorder,
-}) {
-  const uploadRef = useRef(null);
-  const replaceRef = useRef(null);
-  const replaceTargetRef = useRef(null);
-  const [dragOver, setDragOver] = useState(false);
-
-  return (
-    <Panel
-      title={year.year}
-      count={`${year.photos.length} photo${year.photos.length === 1 ? "" : "s"}`}
-      actions={
-        <div className="flex items-center gap-2">
-          {year._new && <span className="admin-chip admin-chip-add">new year</span>}
-          <button
-            type="button"
-            className="admin-btn-danger"
-            onClick={() => onRemoveYear(year.id)}
-          >
-            Delete Year
-          </button>
-        </div>
-      }
-    >
-      {year.photos.length === 0 ? (
-        <EmptyState>No photos yet — add some below.</EmptyState>
-      ) : (
-        <DragGrid
-          items={year.photos}
-          onReorder={(next) => onReorder(year.id, next)}
-          className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3"
-          cardClassName={(p) =>
-            p._new
-              ? "admin-card-staged-new"
-              : p._replaceFile
-                ? "admin-card-staged-edit"
-                : ""
-          }
-          renderItem={(photo, idx, { move }) => (
-            <PhotoCard
-              photo={photo}
-              index={idx}
-              total={year.photos.length}
-              move={move}
-              onRemove={() => onRemovePhoto(year.id, photo.id)}
-              onReplace={() => {
-                replaceTargetRef.current = photo.id;
-                replaceRef.current?.click();
-              }}
-            />
-          )}
-        />
-      )}
-
-      <p className="admin-help mt-3">
-        Drag photos to change their order — first photo shows first on the site.
-      </p>
-
-      {/* Upload drop zone */}
-      <div
-        className={`mt-3 border border-dashed rounded-xl px-4 py-5 text-center transition-colors duration-150 ease-brand ${
-          dragOver ? "border-ultraviolet/60 bg-ultraviolet/5" : "border-border/40"
-        }`}
-        onDragOver={(e) => {
-          if (e.dataTransfer.types.includes("Files")) {
-            e.preventDefault();
-            setDragOver(true);
-          }
-        }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragOver(false);
-          if (e.dataTransfer.files?.length) onStagePhotos(year.id, e.dataTransfer.files);
-        }}
-      >
-        <p className="font-mono text-xs uppercase tracking-widest text-text-muted mb-2">
-          Drop images here
-        </p>
-        <button
-          type="button"
-          className="admin-btn-ghost"
-          onClick={() => uploadRef.current?.click()}
-        >
-          Browse Files
-        </button>
-      </div>
-
-      <input
-        ref={uploadRef}
-        type="file"
-        accept="image/*"
-        multiple
-        hidden
-        onChange={(e) => {
-          if (e.target.files?.length) onStagePhotos(year.id, e.target.files);
-          e.target.value = "";
-        }}
-      />
-      <input
-        ref={replaceRef}
-        type="file"
-        accept="image/*"
-        hidden
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file && replaceTargetRef.current) {
-            onReplacePhoto(year.id, replaceTargetRef.current, file);
-          }
-          replaceTargetRef.current = null;
-          e.target.value = "";
-        }}
-      />
-    </Panel>
-  );
-}
-
-/* ── Tab ── */
 
 export default function GalleryTab({ onDirtyChange }) {
   const [serverYears, setServerYears] = useState([]);
@@ -228,31 +28,18 @@ export default function GalleryTab({ onDirtyChange }) {
   const [saveError, setSaveError] = useState(null);
   const [error, setError] = useState(null);
   const tmpIdRef = useRef(0);
-  const objectUrlsRef = useRef(new Set());
-
-  function trackUrl(file) {
-    const url = URL.createObjectURL(file);
-    objectUrlsRef.current.add(url);
-    return url;
-  }
-
-  function revokeAllUrls() {
-    for (const url of objectUrlsRef.current) URL.revokeObjectURL(url);
-    objectUrlsRef.current.clear();
-  }
-
-  useEffect(() => revokeAllUrls, []);
+  const { trackUrl, revokeAll } = useObjectUrls();
 
   const load = useCallback(async () => {
     try {
       const data = await apiGet("/gallery");
       setServerYears(data);
       setDraftYears(cloneYears(data));
-      revokeAllUrls();
+      revokeAll();
     } catch (err) {
       setError(err.message);
     }
-  }, []);
+  }, [revokeAll]);
 
   useEffect(() => {
     load();
@@ -415,7 +202,7 @@ export default function GalleryTab({ onDirtyChange }) {
     setDraftYears(cloneYears(serverYears));
     setNewYear("");
     setError(null);
-    revokeAllUrls();
+    revokeAll();
   }
 
   /* ── Apply ── */

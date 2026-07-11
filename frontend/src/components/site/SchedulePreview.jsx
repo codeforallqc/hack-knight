@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useSchedule } from '../hooks/useSchedule';
+import { useSchedule } from '../../hooks/useSchedule';
 import ScheduleGrid from './ScheduleGrid';
 
 export default function SchedulePreview() {

@@ -4,187 +4,12 @@
 // the draft through the same ScheduleGrid the public site uses.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { apiGet, apiPost, apiPut, apiDelete } from "../../lib/api";
-import { formatFullTime, formatShortTime } from "../../data/schedule";
-import ScheduleGrid from "../ScheduleGrid";
-import { Panel, Field, EmptyState, SaveBar, DiffModal, Modal } from "./ui";
-
-const EVENT_COLORS = [
-  { value: "violet", label: "Ceremony", swatch: "var(--color-ultraviolet)" },
-  { value: "cyan", label: "Check-in", swatch: "var(--color-electric-blue)" },
-  { value: "green", label: "Hacking", swatch: "var(--color-cyber-teal)" },
-  { value: "orange", label: "Food", swatch: "var(--color-signal-yellow)" },
-];
-
-// 30-minute increments across the full day.
-const TIME_OPTIONS = Array.from({ length: 49 }, (_, i) => i / 2);
-
-function mapEvent(e) {
-  return {
-    id: e.id,
-    day: e.day,
-    startHour: Number(e.start_hour),
-    endHour: Number(e.end_hour),
-    label: e.label,
-    color: e.color ?? "violet",
-  };
-}
-
-function eventsEqual(a, b) {
-  return (
-    a.day === b.day &&
-    a.startHour === b.startHour &&
-    a.endHour === b.endHour &&
-    a.label === b.label &&
-    a.color === b.color
-  );
-}
-
-function timeRange(ev) {
-  return `${formatShortTime(ev.startHour)}–${formatShortTime(ev.endHour)}`;
-}
-
-/* ── Add / edit event modal ── */
-
-function EventModal({ open, initial, days, onSubmit, onClose }) {
-  const [form, setForm] = useState(initial);
-  const [formError, setFormError] = useState(null);
-
-  // Reset the form when a new event is opened — state adjustment during
-  // render (not an effect) so the previous form persists through the
-  // modal's exit animation.
-  const [prevInitial, setPrevInitial] = useState(initial);
-  if (initial !== prevInitial) {
-    setPrevInitial(initial);
-    if (initial) {
-      setForm(initial);
-      setFormError(null);
-    }
-  }
-
-  function submit(e) {
-    e.preventDefault();
-    if (!form.label.trim()) {
-      setFormError("Label is required");
-      return;
-    }
-    if (form.endHour <= form.startHour) {
-      setFormError("End time must be after the start time");
-      return;
-    }
-    onSubmit({ ...form, label: form.label.trim() });
-  }
-
-  if (!form) return null;
-
-  return (
-    <Modal
-      open={open}
-      title={form.id ? "Edit Event" : "New Event"}
-      onClose={onClose}
-    >
-      <form onSubmit={submit} className="flex flex-col gap-4">
-        <Field label="Label" htmlFor="event-label">
-          <input
-            id="event-label"
-            className="admin-input"
-            placeholder="e.g. Opening Ceremony"
-            value={form.label}
-            onChange={(e) => setForm({ ...form, label: e.target.value })}
-            autoFocus
-          />
-        </Field>
-
-        <div className="grid grid-cols-3 gap-3">
-          <Field label="Day" htmlFor="event-day">
-            <select
-              id="event-day"
-              className="admin-select"
-              value={form.day}
-              onChange={(e) => setForm({ ...form, day: e.target.value })}
-            >
-              {days.map((d) => (
-                <option key={d.key} value={d.key}>
-                  {d.label}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Start" htmlFor="event-start">
-            <select
-              id="event-start"
-              className="admin-select"
-              value={form.startHour}
-              onChange={(e) =>
-                setForm({ ...form, startHour: Number(e.target.value) })
-              }
-            >
-              {TIME_OPTIONS.map((t) => (
-                <option key={t} value={t}>
-                  {formatFullTime(t)}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="End" htmlFor="event-end">
-            <select
-              id="event-end"
-              className="admin-select"
-              value={form.endHour}
-              onChange={(e) =>
-                setForm({ ...form, endHour: Number(e.target.value) })
-              }
-            >
-              {TIME_OPTIONS.map((t) => (
-                <option key={t} value={t}>
-                  {formatFullTime(t)}
-                </option>
-              ))}
-            </select>
-          </Field>
-        </div>
-
-        <Field label="Color">
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Event color">
-            {EVENT_COLORS.map((c) => (
-              <button
-                key={c.value}
-                type="button"
-                onClick={() => setForm({ ...form, color: c.value })}
-                aria-pressed={form.color === c.value}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border font-mono text-xs uppercase tracking-wide transition-colors duration-150 ease-brand ${
-                  form.color === c.value
-                    ? "border-ultraviolet/60 bg-black/30 text-text-primary"
-                    : "border-border/40 text-text-secondary hover:border-border/60"
-                }`}
-              >
-                <span
-                  className="w-3 h-3 rounded-pill"
-                  style={{ background: c.swatch }}
-                  aria-hidden="true"
-                />
-                {c.label}
-              </button>
-            ))}
-          </div>
-        </Field>
-
-        {formError && <p className="admin-error">{formError}</p>}
-
-        <div className="flex justify-end gap-2">
-          <button type="button" className="admin-btn-ghost" onClick={onClose}>
-            Cancel
-          </button>
-          <button type="submit" className="admin-btn-primary">
-            {form.id ? "Apply" : "Add Event"}
-          </button>
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
-/* ── Tab ── */
+import { apiGet, apiPost, apiPut, apiDelete } from "../../../lib/api";
+import ScheduleGrid from "../../site/ScheduleGrid";
+import { Panel, Field, EmptyState, SaveBar, DiffModal } from "../ui";
+import { PencilIcon, XIcon } from "../icons";
+import EventModal from "./EventModal";
+import { EVENT_COLORS, mapEvent, eventsEqual, timeRange } from "./scheduleMeta";
 
 export default function ScheduleTab({ onDirtyChange }) {
   const [serverEvents, setServerEvents] = useState([]);
@@ -507,9 +332,7 @@ export default function ScheduleTab({ onDirtyChange }) {
                         aria-label={`Edit ${ev.label}`}
                         onClick={() => setEditing({ ...ev })}
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                        </svg>
+                        <PencilIcon size={14} />
                       </button>
                       <button
                         type="button"
@@ -517,9 +340,7 @@ export default function ScheduleTab({ onDirtyChange }) {
                         aria-label={`Delete ${ev.label}`}
                         onClick={() => removeEvent(ev.id)}
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                          <path d="M18 6 6 18M6 6l12 12" />
-                        </svg>
+                        <XIcon size={14} />
                       </button>
                     </li>
                   );

@@ -2,8 +2,8 @@
 // SchedulePreview and the admin live preview. Presentational only:
 // pass pre-filtered day events plus the hour window to draw.
 
-import { formatHour } from "../data/schedule";
-import { packEvents, getRangeLabel } from "../lib/schedulePacking";
+import { formatHour } from "../../data/schedule";
+import { packEvents, getRangeLabel } from "../../lib/schedulePacking";
 
 export default function ScheduleGrid({
   events,

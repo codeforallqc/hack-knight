@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";  // added useEffect
 import { AnimatePresence, motion } from "motion/react";
 
 import Slideshow from "./Slideshow";
-import { useGallery } from "../hooks/useGallery";
+import { useGallery } from "../../hooks/useGallery";
 
 export default function PhotoGallery() {
   const { galleryData } = useGallery(); // Fetch from API (static fallback)

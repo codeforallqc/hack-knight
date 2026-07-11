@@ -2,7 +2,7 @@
 // Rendered in App.jsx so it appears on every page.
 
 import { Link } from 'react-router-dom';            // Link for internal page navigation
-import logoUrl from '../assets/brand/logoprimary.svg';
+import logoUrl from '../../assets/brand/logoprimary.svg';
 
 export default function Footer() {
   return (

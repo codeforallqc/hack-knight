@@ -2,8 +2,9 @@
 // Visual spec: MASTER.md §7. Motion: fast/dry per the interaction thesis —
 // fades and small translates only, 150–250ms, ease-brand.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion as Motion, AnimatePresence } from "motion/react";
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "./icons";
 
 const EASE_BRAND = [0.4, 0, 0.2, 1];
 
@@ -49,6 +50,149 @@ export function Field({ label, htmlFor, children, className = "" }) {
 
 export function EmptyState({ children }) {
   return <div className="admin-empty">{children}</div>;
+}
+
+/* ── Toggle switch ─────────────────────────────────── */
+
+export function Toggle({ id, checked, onChange, label }) {
+  return (
+    <button
+      type="button"
+      id={id}
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-pill border
+        transition-colors duration-150 ease-brand
+        focus-visible:outline-2 focus-visible:outline-ultraviolet focus-visible:outline-offset-2
+        ${
+          checked
+            ? "bg-ultraviolet border-ultraviolet"
+            : "bg-black/30 border-border/40 hover:border-border/60"
+        }`}
+    >
+      <span
+        aria-hidden="true"
+        className={`inline-block h-4 w-4 rounded-pill bg-text-primary
+          transition-transform duration-150 ease-brand
+          ${checked ? "translate-x-6" : "translate-x-1"}`}
+      />
+    </button>
+  );
+}
+
+/* ── Collapsible panel title ───────────────────────── */
+
+/** Panel `title` that toggles an open/closed section (chevron flips). */
+export function CollapseTitle({ open, onToggle, children }) {
+  return (
+    <button
+      type="button"
+      className="flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-ultraviolet"
+      onClick={onToggle}
+      aria-expanded={open}
+    >
+      {children}
+      <ChevronDownIcon
+        size={14}
+        className={`transition-transform duration-150 ease-brand ${open ? "rotate-180" : ""}`}
+      />
+    </button>
+  );
+}
+
+/* ── Card overlays (inside a `group` drag card) ────── */
+
+/** Hover/focus-revealed action cluster pinned to a card corner. */
+export function CardOverlay({ corner = "top", children }) {
+  return (
+    <div
+      className={`absolute ${corner === "top" ? "top-1.5" : "bottom-1.5"} right-1.5 flex gap-1
+        opacity-0 group-hover:opacity-100 group-focus-within:opacity-100
+        transition-opacity duration-150`}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Keyboard-accessible reorder buttons for a DragGrid card. */
+export function CardMoveButtons({ label, index, total, move }) {
+  return (
+    <CardOverlay corner="bottom">
+      <button
+        type="button"
+        className="admin-btn-icon"
+        aria-label={`Move ${label} earlier`}
+        disabled={index === 0}
+        onClick={() => move(-1)}
+      >
+        <ChevronLeftIcon />
+      </button>
+      <button
+        type="button"
+        className="admin-btn-icon"
+        aria-label={`Move ${label} later`}
+        disabled={index === total - 1}
+        onClick={() => move(1)}
+      >
+        <ChevronRightIcon />
+      </button>
+    </CardOverlay>
+  );
+}
+
+/* ── Scaled preview ────────────────────────────────── */
+
+/**
+ * Shrink-to-fit wrapper for live previews. Public components size
+ * themselves to the viewport, so inside a half-width admin panel they can
+ * be wider than the space available — this measures the content's natural
+ * width and scales it down (never up) to fit without horizontal scrolling.
+ * Keep the wrapper itself padding-free so the measurements stay honest.
+ */
+export function ScaledPreview({ children, className = "" }) {
+  const outerRef = useRef(null);
+  const innerRef = useRef(null);
+  const [box, setBox] = useState({ scale: 1, height: null });
+
+  useEffect(() => {
+    const outer = outerRef.current;
+    const inner = innerRef.current;
+    if (!outer || !inner) return;
+
+    function measure() {
+      const available = outer.clientWidth;
+      const natural = inner.offsetWidth;
+      if (!available || !natural) return;
+      const scale = Math.min(1, available / natural);
+      const height = Math.round(inner.offsetHeight * scale);
+      setBox((b) => (b.scale === scale && b.height === height ? b : { scale, height }));
+    }
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(outer);
+    observer.observe(inner);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={outerRef}
+      className={`overflow-hidden ${className}`}
+      style={{ height: box.height ?? undefined }}
+    >
+      <div
+        ref={innerRef}
+        className="w-max mx-auto flow-root"
+        style={{ transform: `scale(${box.scale})`, transformOrigin: "top left" }}
+      >
+        {children}
+      </div>
+    </div>
+  );
 }
 
 /* ── Save bar ──────────────────────────────────────── */

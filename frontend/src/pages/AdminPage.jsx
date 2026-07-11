@@ -7,10 +7,10 @@ import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion as Motion, MotionConfig } from "motion/react";
 import { logout } from "../lib/api";
-import ScheduleTab from "../components/admin/ScheduleTab";
-import GalleryTab from "../components/admin/GalleryTab";
-import TeamTab from "../components/admin/TeamTab";
-import SponsorsTab from "../components/admin/SponsorsTab";
+import ScheduleTab from "../components/admin/schedule/ScheduleTab";
+import GalleryTab from "../components/admin/gallery/GalleryTab";
+import TeamTab from "../components/admin/team/TeamTab";
+import SponsorsTab from "../components/admin/sponsors/SponsorsTab";
 import MiscTab from "../components/admin/MiscTab";
 
 const TABS = [

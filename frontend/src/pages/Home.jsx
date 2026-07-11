@@ -1,12 +1,12 @@
 // Imports and stacks every section component in order.
 // FAQ and Team are wrapped in <section> tags with IDs so the navbar can anchor-scroll to them.
 import { motion } from 'motion/react';
-import Hero from '../components/Hero';                       // top banner: title, description, countdown, buttons
-import SchedulePreview from '../components/SchedulePreview'; // mini schedule grid + link to full schedule page
-import PhotoGallery from '../components/PhotoGallery';       // photo gallery of past events
-import FAQ from '../components/FAQ';                         // FAQ accordion
-import TeamSection from '../components/TeamSection';         // team member grid
-import SponsorsCarousel from '../components/SponsorsCarousel'; // sponsor logo carousel + link to full sponsors page
+import Hero from '../components/site/Hero';                       // top banner: title, description, countdown, buttons
+import SchedulePreview from '../components/site/SchedulePreview'; // mini schedule grid + link to full schedule page
+import PhotoGallery from '../components/site/PhotoGallery';       // photo gallery of past events
+import FAQ from '../components/site/FAQ';                         // FAQ accordion
+import TeamSection from '../components/site/TeamSection';         // team member grid
+import SponsorsCarousel from '../components/site/SponsorsCarousel'; // sponsor logo carousel + link to full sponsors page
 
 
 function FadeInSection({ children, id, className }) { 

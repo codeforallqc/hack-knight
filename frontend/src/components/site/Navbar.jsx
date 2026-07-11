@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import logoUrl from '../assets/brand/logoprimary.svg';
-import { useSiteSettings } from '../hooks/useSiteSettings';
+import logoUrl from '../../assets/brand/logoprimary.svg';
+import { useSiteSettings } from '../../hooks/useSiteSettings';
+import { MLH_BADGE_HREF, MLH_BADGE_SRC, MLH_BADGE_ALT } from '../../lib/mlh';
 
 const NAV_SECTIONS = ['sponsors', 'photos', 'schedule', 'team', 'faq'];
 
@@ -60,7 +61,7 @@ export default function Navbar() {
       {showMlhBadge && (
         <a
           id="mlh-trust-badge"
-          href="https://mlh.io/na?utm_source=na-hackathon&utm_medium=TrustBadge&utm_campaign=2026-season&utm_content=gray"
+          href={MLH_BADGE_HREF}
           target="_blank"
           rel="noreferrer"
           className="w-[50px] md:w-[100px]"
@@ -73,8 +74,8 @@ export default function Navbar() {
           }}
         >
           <img
-            src="https://s3.amazonaws.com/logged-assets/trust-badge/2026/mlh-trust-badge-2026-gray.svg"
-            alt="Major League Hacking 2026 Hackathon Season"
+            src={MLH_BADGE_SRC}
+            alt={MLH_BADGE_ALT}
             style={{ width: "100%" }}
           />
         </a>
