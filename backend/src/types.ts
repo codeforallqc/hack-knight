@@ -50,6 +50,14 @@ export interface GalleryYearWithPhotos extends GalleryYear {
   photos: GalleryPhoto[];
 }
 
+export interface Company {
+  id: string;
+  name: string;
+  logo_url: string;
+  sort_order: number;
+  created_at?: string;
+}
+
 export interface TeamMember {
   id: string;
   name: string;
@@ -58,8 +66,15 @@ export interface TeamMember {
   badge_url: string | null;
   linkedin_url: string | null;
   github_url: string | null;
+  company1_id: string | null;
+  company2_id: string | null;
   sort_order: number;
   created_at?: string;
+}
+
+// GET /api/team embeds the resolved company rows (order: company1, company2).
+export interface TeamMemberWithCompanies extends TeamMember {
+  companies: Company[];
 }
 
 export interface CreateTeamMemberBody {
@@ -67,7 +82,14 @@ export interface CreateTeamMemberBody {
   title: string;
   linkedin_url?: string;
   github_url?: string;
+  company1_id?: string;
+  company2_id?: string;
   sort_order?: number;
 }
 
 export type UpdateTeamMemberBody = Partial<CreateTeamMemberBody>;
+
+// PUT /api/team/reorder and PUT /api/gallery/photos/reorder
+export interface ReorderBody {
+  order: { id: string; sort_order: number }[];
+}

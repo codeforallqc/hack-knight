@@ -62,6 +62,20 @@ ALTER TABLE gallery_photos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read gallery_photos" ON gallery_photos FOR SELECT USING (true);
 CREATE POLICY "Service role full access gallery_photos" ON gallery_photos FOR ALL USING (auth.role() = 'service_role');
 
+-- Companies (reusable logo badges for team members)
+
+CREATE TABLE companies (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  logo_url TEXT NOT NULL,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read companies" ON companies FOR SELECT USING (true);
+CREATE POLICY "Service role full access companies" ON companies FOR ALL USING (auth.role() = 'service_role');
+
 -- Team Members
 
 CREATE TABLE team_members (
@@ -72,6 +86,8 @@ CREATE TABLE team_members (
   badge_url TEXT,
   linkedin_url TEXT,
   github_url TEXT,
+  company1_id UUID REFERENCES companies(id) ON DELETE SET NULL,
+  company2_id UUID REFERENCES companies(id) ON DELETE SET NULL,
   sort_order INT DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );
@@ -79,6 +95,8 @@ CREATE TABLE team_members (
 -- Migration (run against existing DB):
 -- ALTER TABLE team_members ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
 -- ALTER TABLE team_members ADD COLUMN IF NOT EXISTS github_url TEXT;
+-- See supabase/migrations/20260711000000_companies_and_member_badges.sql for
+-- the companies table + company1_id/company2_id columns.
 
 ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read team_members" ON team_members FOR SELECT USING (true);

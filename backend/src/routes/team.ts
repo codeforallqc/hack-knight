@@ -3,7 +3,12 @@ import multer from "multer";
 import { randomUUID } from "node:crypto";
 import { supabase } from "../db/supabase.js";
 import { authenticateAdmin } from "../middleware/auth.js";
-import { TeamMember } from "../types.js";
+import {
+  Company,
+  ReorderBody,
+  TeamMember,
+  TeamMemberWithCompanies,
+} from "../types.js";
 
 const teamRouter = Router();
 
@@ -49,18 +54,34 @@ async function uploadToStorage(
   return publicUrl;
 }
 
-// GET /api/team  (public)
+// GET /api/team  (public) — members with their company badges embedded
 teamRouter.get("/", async (_req: Request, res: Response) => {
-  const { data, error } = await supabase
-    .from("team_members")
-    .select("*")
-    .order("sort_order", { ascending: true });
+  const [membersRes, companiesRes] = await Promise.all([
+    supabase
+      .from("team_members")
+      .select("*")
+      .order("sort_order", { ascending: true }),
+    supabase.from("companies").select("*"),
+  ]);
 
-  if (error) {
+  if (membersRes.error || companiesRes.error) {
     res.status(500).json({ message: "Failed to fetch team" });
     return;
   }
-  res.json(data);
+
+  const companiesById = new Map(
+    (companiesRes.data as Company[]).map((c) => [c.id, c]),
+  );
+  const result: TeamMemberWithCompanies[] = (
+    membersRes.data as TeamMember[]
+  ).map((m) => ({
+    ...m,
+    companies: [m.company1_id, m.company2_id]
+      .map((id) => (id ? companiesById.get(id) : undefined))
+      .filter((c): c is Company => !!c),
+  }));
+
+  res.json(result);
 });
 
 // POST /api/team  (admin) - create a member with photo (+ optional badge)
@@ -69,7 +90,7 @@ teamRouter.post(
   authenticateAdmin,
   uploadFields,
   async (
-    req: Request<{}, {}, { name: string; title: string; linkedin_url?: string; github_url?: string; sort_order?: number }>,
+    req: Request<{}, {}, { name: string; title: string; linkedin_url?: string; github_url?: string; company1_id?: string; company2_id?: string; sort_order?: number }>,
     res: Response,
   ) => {
     const { name, title } = req.body;
@@ -113,6 +134,8 @@ teamRouter.post(
         badge_url: badgeUrl,
         linkedin_url: req.body.linkedin_url || null,
         github_url: req.body.github_url || null,
+        company1_id: req.body.company1_id || null,
+        company2_id: req.body.company2_id || null,
         sort_order: req.body.sort_order ?? 0,
       })
       .select()
@@ -132,6 +155,35 @@ teamRouter.post(
   },
 );
 
+// PUT /api/team/reorder  (admin) - batch-update sort orders after a drag.
+// Registered before /:id so Express doesn't treat "reorder" as a member id.
+teamRouter.put(
+  "/reorder",
+  authenticateAdmin,
+  async (req: Request<{}, {}, ReorderBody>, res: Response) => {
+    const { order } = req.body;
+    if (!Array.isArray(order) || order.length === 0) {
+      res.status(422).json({ message: "Order is required" });
+      return;
+    }
+
+    const results = await Promise.all(
+      order.map((o) =>
+        supabase
+          .from("team_members")
+          .update({ sort_order: o.sort_order })
+          .eq("id", o.id),
+      ),
+    );
+
+    if (results.some((r) => r.error)) {
+      res.status(500).json({ message: "Server error" });
+      return;
+    }
+    res.status(204).send();
+  },
+);
+
 // PUT /api/team/:id  (admin) - update info, optionally replace photo/badge
 teamRouter.put(
   "/:id",
@@ -141,7 +193,7 @@ teamRouter.put(
     req: Request<
       { id: string },
       {},
-      { name?: string; title?: string; linkedin_url?: string; github_url?: string; sort_order?: number }
+      { name?: string; title?: string; linkedin_url?: string; github_url?: string; company1_id?: string; company2_id?: string; sort_order?: number }
     >,
     res: Response,
   ) => {
@@ -170,6 +222,10 @@ teamRouter.put(
       updates.linkedin_url = req.body.linkedin_url || null;
     if (req.body.github_url !== undefined)
       updates.github_url = req.body.github_url || null;
+    if (req.body.company1_id !== undefined)
+      updates.company1_id = req.body.company1_id || null;
+    if (req.body.company2_id !== undefined)
+      updates.company2_id = req.body.company2_id || null;
 
     const files = req.files as MulterFiles;
     const oldPaths: string[] = [];
