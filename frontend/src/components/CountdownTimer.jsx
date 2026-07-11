@@ -1,34 +1,41 @@
 import { useState, useEffect } from "react";
+import { useCountdown } from "../hooks/useCountdown";
 
-export default function CountdownTimer() {
+// this function calculates the time left until the target date
+function calculateTimeLeft(targetMs, nowMs) {
+  const difference = targetMs - nowMs;
 
-  const targetDate = new Date("2026-10-09T00:00:00").getTime();
-
-  function calculateTimeLeft() { // this function calculates the time left until the target date
-    const now = new Date().getTime();
-    const difference = targetDate - now;
-
-    if (difference > 0) {
-      return {
-        months: Math.floor(difference / (1000 * 60 * 60 * 24 * 30)),
-        days: Math.floor((difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((difference % (1000 * 60)) / 1000),
-      };
-    }
-
-    return { months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+  if (difference > 0) {
+    return {
+      months: Math.floor(difference / (1000 * 60 * 60 * 24 * 30)),
+      days: Math.floor((difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+      seconds: Math.floor((difference % (1000 * 60)) / 1000),
+    };
   }
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft()); // this state is used to store the time left until the target date
+  return { months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+}
 
-  useEffect(() => { // this effect is used to update the time left every second
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
+// `targetDate` (ISO string) is optional — pass it for an instant, network-free
+// preview (e.g. the admin Misc tab); otherwise it's fetched from the API.
+export default function CountdownTimer({ targetDate: targetDateProp }) {
+  const { targetDate: fetchedTargetDate } = useCountdown({ enabled: !targetDateProp });
+  const targetDate = targetDateProp ?? fetchedTargetDate;
+  const targetMs = new Date(targetDate).getTime();
+
+  // `now` only exists to force a re-render each second — timeLeft itself is
+  // derived fresh every render so prop changes (e.g. admin preview edits)
+  // show up immediately instead of waiting for the next tick.
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const timeLeft = calculateTimeLeft(targetMs, now);
 
   const formatNumber = (num) => (num < 10 ? `0${num}` : num); // this function formats the number to have a leading zero if it is less than 10
   

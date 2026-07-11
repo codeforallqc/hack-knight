@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logoUrl from '../assets/brand/logoprimary.svg';
-
-// Flip to true when MLH approves the badge
-const SHOW_MLH_BADGE = false;
+import { useSiteSettings } from '../hooks/useSiteSettings';
 
 const NAV_SECTIONS = ['sponsors', 'photos', 'schedule', 'team', 'faq'];
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
+  // Toggled from the admin Misc tab once MLH approves the badge.
+  const { settings } = useSiteSettings();
+  const showMlhBadge = settings.mlh_badge_enabled === 'true';
 
   useEffect(() => {
     const observers = [];
@@ -56,7 +57,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       {/* MLH Trust Badge — fixed to top-left of viewport */}
-      {SHOW_MLH_BADGE && (
+      {showMlhBadge && (
         <a
           id="mlh-trust-badge"
           href="https://mlh.io/na?utm_source=na-hackathon&utm_medium=TrustBadge&utm_campaign=2026-season&utm_content=gray"

@@ -5,9 +5,11 @@
 
 import { Link } from 'react-router-dom';            // Link for navigating to /sponsors
 import { motion } from 'motion/react';              // Framer Motion for infinite carousel loop
-import { sponsors } from '../data/sponsors';        // import the sponsors array from the data folder
+import { useSponsors } from '../hooks/useSponsors';  // fetches sponsors from the API (static fallback)
 
 export default function SponsorsCarousel() {
+  const { sponsors } = useSponsors();
+
   return (
     <div className="section-wrapper my-0.5">
 
