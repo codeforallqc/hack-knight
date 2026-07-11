@@ -139,7 +139,7 @@ function MemberModal({ open, initial, companies, trackUrl, onSubmit, onClose }) 
   return (
     <Modal
       open={open}
-      title={isNew ? "Add Member" : `Edit ${initial.name}`}
+      title={isNew ? "Add Member" : `Edit ${form.name}`}
       onClose={onClose}
       wide
     >
