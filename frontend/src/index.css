@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./styles/components.css";
+@import "./styles/admin.css";
 
 /* ── Design tokens (Tailwind v4 native theme) ─────────────────
    Replaces the legacy tailwind.config.js. Each custom property

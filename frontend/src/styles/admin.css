@@ -1,131 +1,239 @@
-/* Minimal admin dashboard styling. Functional baseline — to be restyled. */
+/* ── Admin dashboard — the backstage layer ─────────────────────
+   Every value here resolves to a token in index.css @theme.
+   Spec: MASTER.md §7 (admin component kit). Imported via index.css
+   so Tailwind v4 processes the @apply rules. */
 
-.admin-page {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  color: var(--color-text-primary, #eee);
-}
+@layer components {
 
-.admin-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
+  /* ── Page shell ── */
 
-.admin-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-}
+  .admin-page {
+    @apply max-w-6xl mx-auto px-container py-8 min-h-screen;
+  }
 
-.admin-tabs button {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: none;
-  color: inherit;
-  cursor: pointer;
-  opacity: 0.6;
-}
+  .admin-header {
+    @apply flex items-center justify-between gap-4 mb-6;
+  }
 
-.admin-tabs button.admin-tab-active {
-  opacity: 1;
-  border-bottom: 2px solid #8b5cf6;
-}
+  .admin-title {
+    @apply font-display font-bold text-2xl text-text-primary;
+  }
 
-.admin-tab h2 {
-  margin: 1.5rem 0 0.5rem;
-  font-size: 1.1rem;
-}
+  .admin-subtitle {
+    @apply font-mono text-xs uppercase tracking-widest text-text-muted;
+  }
 
-.admin-tab h3 {
-  margin: 0;
-}
+  /* ── Tab bar ── */
 
-.admin-error {
-  color: #f87171;
-  margin-bottom: 1rem;
-}
+  .admin-tabs {
+    @apply flex gap-1 mb-6 border-b border-border/40;
+  }
 
-.admin-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+  .admin-tab-btn {
+    @apply relative font-mono text-sm uppercase tracking-wide px-4 py-3
+           text-text-secondary transition-colors duration-150 ease-brand
+           hover:text-text-primary
+           focus-visible:outline-2 focus-visible:outline-ultraviolet focus-visible:-outline-offset-2;
+  }
 
-.admin-list li {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.4rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
+  .admin-tab-btn-active {
+    @apply text-text-primary;
+  }
 
-.admin-list li span {
-  flex: 1;
-}
+  /* Ultraviolet unsaved-changes dot next to a tab label */
+  .admin-tab-dot {
+    @apply inline-block w-1.5 h-1.5 rounded-pill bg-ultraviolet align-middle ml-1.5;
+    box-shadow: 0 0 6px var(--color-ultraviolet);
+  }
 
-.admin-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-  margin-bottom: 1rem;
-}
+  /* ── Panels ── */
 
-.admin-form input,
-.admin-form select {
-  padding: 0.4rem 0.6rem;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.4rem;
-  color: inherit;
-}
+  .admin-panel {
+    @apply bg-surface border border-border/40 rounded-card shadow-card p-5;
+  }
 
-.admin-form button,
-.admin-list button,
-.admin-header button,
-.admin-year-head button,
-.admin-photo button {
-  padding: 0.4rem 0.8rem;
-  background: #8b5cf6;
-  border: none;
-  border-radius: 0.4rem;
-  color: #fff;
-  cursor: pointer;
-}
+  .admin-panel-head {
+    @apply flex items-center justify-between gap-3 mb-4;
+  }
 
-.admin-year {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.5rem;
-}
+  .admin-panel-title {
+    @apply font-display font-bold text-lg text-text-primary;
+  }
 
-.admin-year-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-}
+  .admin-count-pill {
+    @apply font-mono text-xs text-text-secondary bg-black/30
+           border border-border/40 rounded-pill px-2.5 py-0.5;
+  }
 
-.admin-photo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
+  /* ── Fields ── */
 
-.admin-photo {
-  position: relative;
-  font-size: 0.85rem;
-}
+  .admin-label {
+    @apply block font-mono text-xs uppercase tracking-widest text-text-secondary mb-1.5;
+  }
 
-.admin-photo img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 0.4rem;
+  .admin-input,
+  .admin-select {
+    @apply w-full bg-black/30 border border-border/40 rounded-lg px-3 py-2
+           font-body text-sm text-text-primary placeholder:text-text-muted
+           transition-colors duration-150 ease-brand
+           hover:border-border/60
+           focus:border-ultraviolet focus:outline-none
+           disabled:opacity-50;
+  }
+
+  .admin-select {
+    @apply appearance-none pr-8 bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
+  }
+
+  .admin-select option {
+    @apply bg-surface text-text-primary;
+  }
+
+  /* ── Buttons ── */
+
+  .admin-btn-primary {
+    @apply font-mono text-sm font-semibold uppercase tracking-wide
+           bg-ultraviolet text-text-primary rounded-lg px-4 py-2
+           transition-all duration-150 ease-brand
+           hover:bg-violet-light hover:shadow-glow
+           active:bg-violet-dark
+           focus-visible:outline-2 focus-visible:outline-violet-light focus-visible:outline-offset-2
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .admin-btn-ghost {
+    @apply font-mono text-sm font-semibold uppercase tracking-wide
+           border border-border/40 text-text-secondary rounded-lg px-4 py-2
+           transition-colors duration-150 ease-brand
+           hover:border-ultraviolet/60 hover:text-text-primary
+           active:bg-ultraviolet/10
+           focus-visible:outline-2 focus-visible:outline-ultraviolet focus-visible:outline-offset-2
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .admin-btn-danger {
+    @apply font-mono text-sm font-semibold uppercase tracking-wide
+           border border-red-500/40 text-red-400 rounded-lg px-4 py-2
+           transition-colors duration-150 ease-brand
+           hover:bg-red-500/10 hover:border-red-500/60
+           focus-visible:outline-2 focus-visible:outline-red-400 focus-visible:outline-offset-2
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  /* Small square icon button (delete ×, replace ⟳ on photo cards) */
+  .admin-btn-icon {
+    @apply inline-flex items-center justify-center w-7 h-7 rounded-lg
+           bg-black/60 text-text-primary border border-border/40
+           transition-colors duration-150 ease-brand
+           hover:border-ultraviolet/60 hover:bg-black/80
+           focus-visible:outline-2 focus-visible:outline-ultraviolet
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .admin-btn-icon-danger {
+    @apply hover:border-red-500/60 hover:text-red-400;
+  }
+
+  /* ── Change chips (diff modal + staged markers) ── */
+
+  .admin-chip {
+    @apply font-mono text-[0.65rem] font-semibold uppercase tracking-widest
+           rounded-pill px-2 py-0.5 whitespace-nowrap;
+  }
+
+  .admin-chip-add {
+    @apply text-cyber-teal bg-cyber-teal/10 border border-cyber-teal/30;
+  }
+
+  .admin-chip-edit {
+    @apply text-signal-yellow bg-signal-yellow/10 border border-signal-yellow/30;
+  }
+
+  .admin-chip-delete {
+    @apply text-red-400 bg-red-500/10 border border-red-500/30;
+  }
+
+  .admin-chip-reorder {
+    @apply text-ultraviolet bg-ultraviolet/10 border border-ultraviolet/30;
+  }
+
+  /* ── Drag-to-sort cards ── */
+
+  .admin-drag-card {
+    @apply relative rounded-xl border border-border/40 bg-black/20
+           transition-[border-color,box-shadow] duration-150 ease-brand
+           hover:border-border/60;
+  }
+
+  .admin-drag-card-active {
+    @apply border-ultraviolet/60 shadow-glow scale-[1.03] z-10;
+  }
+
+  /* Staged-state accents on cards */
+  .admin-card-staged-new {
+    @apply border-cyber-teal/50;
+  }
+
+  .admin-card-staged-delete {
+    @apply border-red-500/50 opacity-50;
+  }
+
+  .admin-card-staged-edit {
+    @apply border-signal-yellow/50;
+  }
+
+  /* ── Save bar ── */
+
+  .admin-savebar {
+    @apply sticky bottom-4 z-40 mt-6 flex items-center justify-between gap-4
+           bg-surface/95 backdrop-blur-md border border-ultraviolet/40
+           rounded-card shadow-card px-5 py-3;
+    box-shadow: var(--shadow-card), 0 0 20px rgba(124, 58, 237, 0.15);
+  }
+
+  .admin-savebar-count {
+    @apply font-mono text-xs uppercase tracking-widest text-text-secondary;
+  }
+
+  /* ── Modal ── */
+
+  .admin-modal-backdrop {
+    @apply fixed inset-0 z-100 bg-black/60 backdrop-blur-sm
+           flex items-center justify-center p-4;
+  }
+
+  .admin-modal {
+    @apply bg-surface border border-border/40 rounded-card shadow-card
+           w-full max-w-lg max-h-[85vh] overflow-y-auto p-6;
+  }
+
+  .admin-modal-wide {
+    @apply max-w-2xl;
+  }
+
+  .admin-modal-title {
+    @apply font-display font-bold text-lg text-text-primary mb-4;
+  }
+
+  /* ── Misc ── */
+
+  .admin-error {
+    @apply font-mono text-sm text-red-400 bg-red-500/10
+           border border-red-500/30 rounded-lg px-3 py-2 mb-4;
+  }
+
+  .admin-empty {
+    @apply font-mono text-sm text-text-muted text-center
+           border border-dashed border-border/40 rounded-xl px-4 py-8;
+  }
+
+  .admin-divider {
+    @apply border-t border-border/40 my-4;
+  }
+
+  .admin-help {
+    @apply font-body text-xs text-text-muted;
+  }
 }
