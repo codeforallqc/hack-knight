@@ -50,12 +50,17 @@ export interface GalleryYearWithPhotos extends GalleryYear {
   photos: GalleryPhoto[];
 }
 
+export type SponsorTier = "platinum" | "gold" | "silver" | "bronze";
+
 export interface Company {
   id: string;
   name: string;
   logo_url: string;
   sort_order: number;
   created_at?: string;
+  sponsor_tier: SponsorTier | null;
+  sponsor_url: string | null;
+  sponsor_blurb: string | null;
 }
 
 export interface TeamMember {
@@ -89,7 +94,17 @@ export interface CreateTeamMemberBody {
 
 export type UpdateTeamMemberBody = Partial<CreateTeamMemberBody>;
 
-// PUT /api/team/reorder and PUT /api/gallery/photos/reorder
+// PUT /api/team/reorder, PUT /api/gallery/photos/reorder, PUT /api/companies/reorder
 export interface ReorderBody {
   order: { id: string; sort_order: number }[];
+}
+
+export interface SiteSetting {
+  key: string;
+  value: string;
+  updated_at?: string;
+}
+
+export interface UpdateSiteSettingBody {
+  value: string;
 }

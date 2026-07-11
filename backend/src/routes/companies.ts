@@ -3,7 +3,9 @@ import multer from "multer";
 import { randomUUID } from "node:crypto";
 import { supabase } from "../db/supabase.js";
 import { authenticateAdmin } from "../middleware/auth.js";
-import { Company } from "../types.js";
+import { Company, ReorderBody, SponsorTier } from "../types.js";
+
+const SPONSOR_TIERS: SponsorTier[] = ["platinum", "gold", "silver", "bronze"];
 
 const companiesRouter = Router();
 
@@ -57,12 +59,49 @@ companiesRouter.get("/", async (_req: Request, res: Response) => {
   res.json(data);
 });
 
-// POST /api/companies  (admin) — create a company with its logo
+// PUT /api/companies/reorder  (admin) - batch-update sort orders after a
+// drag. Registered before /:id so Express doesn't treat "reorder" as an id.
+companiesRouter.put(
+  "/reorder",
+  authenticateAdmin,
+  async (req: Request<{}, {}, ReorderBody>, res: Response) => {
+    const { order } = req.body;
+    if (!Array.isArray(order) || order.length === 0) {
+      res.status(422).json({ message: "Order is required" });
+      return;
+    }
+
+    const results = await Promise.all(
+      order.map((o) =>
+        supabase
+          .from("companies")
+          .update({ sort_order: o.sort_order })
+          .eq("id", o.id),
+      ),
+    );
+
+    if (results.some((r) => r.error)) {
+      res.status(500).json({ message: "Server error" });
+      return;
+    }
+    res.status(204).send();
+  },
+);
+
+// POST /api/companies  (admin) — create a company with its logo, optionally
+// as a sponsor (sponsor_tier + sponsor_url + sponsor_blurb)
 companiesRouter.post(
   "/",
   authenticateAdmin,
   upload.single("logo"),
-  async (req: Request<{}, {}, { name: string }>, res: Response) => {
+  async (
+    req: Request<
+      {},
+      {},
+      { name: string; sponsor_tier?: string; sponsor_url?: string; sponsor_blurb?: string }
+    >,
+    res: Response,
+  ) => {
     const { name } = req.body;
     if (!name) {
       res.status(422).json({ message: "Name is required" });
@@ -70,6 +109,11 @@ companiesRouter.post(
     }
     if (!req.file) {
       res.status(422).json({ message: "Logo is required" });
+      return;
+    }
+    const sponsorTier = req.body.sponsor_tier || "";
+    if (sponsorTier && !SPONSOR_TIERS.includes(sponsorTier as SponsorTier)) {
+      res.status(422).json({ message: "Invalid sponsor tier" });
       return;
     }
 
@@ -81,7 +125,13 @@ companiesRouter.post(
 
     const { data, error } = await supabase
       .from("companies")
-      .insert({ name, logo_url: logoUrl })
+      .insert({
+        name,
+        logo_url: logoUrl,
+        sponsor_tier: sponsorTier || null,
+        sponsor_url: req.body.sponsor_url || null,
+        sponsor_blurb: req.body.sponsor_blurb || null,
+      })
       .select()
       .single();
 
@@ -100,12 +150,20 @@ companiesRouter.post(
   },
 );
 
-// PUT /api/companies/:id  (admin) — rename and/or replace the logo
+// PUT /api/companies/:id  (admin) — rename, replace the logo, and/or edit
+// sponsor fields (tier/url/blurb). Pass sponsor_tier="" to un-sponsor.
 companiesRouter.put(
   "/:id",
   authenticateAdmin,
   upload.single("logo"),
-  async (req: Request<{ id: string }, {}, { name?: string }>, res: Response) => {
+  async (
+    req: Request<
+      { id: string },
+      {},
+      { name?: string; sponsor_tier?: string; sponsor_url?: string; sponsor_blurb?: string }
+    >,
+    res: Response,
+  ) => {
     const { data: existing, error: fetchError } = await supabase
       .from("companies")
       .select("*")
@@ -122,8 +180,22 @@ companiesRouter.put(
     }
     const company = existing as Company;
 
+    if (
+      req.body.sponsor_tier &&
+      !SPONSOR_TIERS.includes(req.body.sponsor_tier as SponsorTier)
+    ) {
+      res.status(422).json({ message: "Invalid sponsor tier" });
+      return;
+    }
+
     const updates: Partial<Company> = {};
     if (req.body.name !== undefined) updates.name = req.body.name;
+    if (req.body.sponsor_tier !== undefined)
+      updates.sponsor_tier = (req.body.sponsor_tier || null) as SponsorTier | null;
+    if (req.body.sponsor_url !== undefined)
+      updates.sponsor_url = req.body.sponsor_url || null;
+    if (req.body.sponsor_blurb !== undefined)
+      updates.sponsor_blurb = req.body.sponsor_blurb || null;
 
     let oldPath: string | null = null;
     if (req.file) {
