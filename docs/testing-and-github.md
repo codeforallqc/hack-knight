@@ -72,6 +72,47 @@ treat a failing `npm run build` as a failing test.
 5. For uploads: use a large image and confirm compression keeps the request
    under Vercel's 4.5 MB limit.
 
+### Pulling production data into your local database
+
+Migrations give you the schema; sometimes you want real production data to
+test against too. The repo is linked to the production Supabase project, so
+the CLI can snapshot it into the local seed file:
+
+```bash
+# From the repo root, with the local stack running (npx supabase start)
+
+# 1. (Optional) check for schema drift — "No schema changes found" means
+#    production already matches your local migrations
+npx supabase db pull
+
+# 2. Dump production data into the seed file (prompts for the database
+#    password — Project Settings → Database in the Supabase dashboard)
+npx supabase db dump --data-only -s public -f supabase/seed.sql
+
+# 3. Rebuild local from migrations, then load the dumped data
+npx supabase db reset
+```
+
+`config.toml` points `[db.seed]` at `supabase/seed.sql`, so every later
+`db reset` re-loads that snapshot. Re-run step 2 whenever you want fresher
+data. If `db pull` does find drift, it writes a new migration file — review
+it and commit it like any other migration.
+
+Things that will bite you if you deviate:
+
+- **Keep the `-s public` flag.** Without it the dump includes `storage`
+  schema rows: the `photos` bucket (which the storage migration already
+  creates, so the reset fails with a duplicate-key error) and
+  `storage.objects` entries for files that don't exist locally.
+- **Don't add `--use-copy`.** It emits `COPY ... FROM stdin` blocks that
+  only `psql` understands; `db reset` runs the seed as plain SQL and fails
+  with `syntax error at or near "\"`. The default `INSERT` output works.
+- **Photos still render.** Image files stay in cloud storage — `src`
+  columns hold full production URLs and the bucket is public-read, so
+  gallery and team photos load from production even against a local DB.
+- **Never commit `supabase/seed.sql`.** It's a production data dump and is
+  git-ignored; keep it that way.
+
 ### Habits worth keeping
 
 - **Test at the boundary you changed.** A route change gets curl; a hook

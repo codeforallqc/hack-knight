@@ -4,7 +4,7 @@
 
 # Supabase local dev
 supabase/.temp/
-supabase/seed.sql   # only if it contains sensitive seed data
+seed.sql
 
 # dotenvx
 .env.keys
