@@ -111,6 +111,16 @@ function MemberCard({ member }) {
           </p>
         </div>
         <div className="flex gap-2 items-center">
+          {/* Company logo badges lead the row — badge 1, badge 2, then socials */}
+          {(member.companies ?? []).map((company) => (
+            <img
+              key={company.id}
+              src={company.logo}
+              alt={`${company.name} logo`}
+              title={company.name}
+              className="w-6 h-6 object-contain transition-all duration-200 hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.85)] hover:scale-110"
+            />
+          ))}
           {member.github && (
             <a href={member.github} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
               <img

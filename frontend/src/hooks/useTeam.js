@@ -16,6 +16,12 @@ function mapMember(m) {
     badge: m.badge_url,
     linkedin: m.linkedin_url || null,
     github: m.github_url || null,
+    // Company logo badges (max 2), already ordered badge 1 → badge 2.
+    companies: (m.companies ?? []).map((c) => ({
+      id: c.id,
+      name: c.name,
+      logo: c.logo_url,
+    })),
     sortOrder: m.sort_order,
   };
 }
