@@ -5,7 +5,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   apiGet,
-  apiPost,
   apiPut,
   apiDelete,
   apiUpload,
@@ -96,12 +95,17 @@ function MemberModal({ open, initial, companies, trackUrl, onSubmit, onClose }) 
   const [form, setForm] = useState(initial);
   const [formError, setFormError] = useState(null);
 
-  useEffect(() => {
-    if (open) {
+  // Reset the form when a new member is opened — state adjustment during
+  // render (not an effect) so the previous form persists through the
+  // modal's exit animation.
+  const [prevInitial, setPrevInitial] = useState(initial);
+  if (initial !== prevInitial) {
+    setPrevInitial(initial);
+    if (initial) {
       setForm(initial);
       setFormError(null);
     }
-  }, [open, initial]);
+  }
 
   if (!form) return null;
 

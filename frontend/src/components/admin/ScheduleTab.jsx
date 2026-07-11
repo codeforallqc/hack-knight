@@ -50,12 +50,17 @@ function EventModal({ open, initial, days, onSubmit, onClose }) {
   const [form, setForm] = useState(initial);
   const [formError, setFormError] = useState(null);
 
-  useEffect(() => {
-    if (open) {
+  // Reset the form when a new event is opened — state adjustment during
+  // render (not an effect) so the previous form persists through the
+  // modal's exit animation.
+  const [prevInitial, setPrevInitial] = useState(initial);
+  if (initial !== prevInitial) {
+    setPrevInitial(initial);
+    if (initial) {
       setForm(initial);
       setFormError(null);
     }
-  }, [open, initial]);
+  }
 
   function submit(e) {
     e.preventDefault();

@@ -3,12 +3,12 @@
 // fades and small translates only, 150–250ms, ease-brand.
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion as Motion, AnimatePresence } from "motion/react";
 
-export const EASE_BRAND = [0.4, 0, 0.2, 1];
+const EASE_BRAND = [0.4, 0, 0.2, 1];
 
 /** Move an array item and return a new array. */
-export function arrayMove(arr, from, to) {
+function arrayMove(arr, from, to) {
   const next = [...arr];
   const [moved] = next.splice(from, 1);
   next.splice(to, 0, moved);
@@ -57,7 +57,7 @@ export function SaveBar({ count, saving, onSave, onDiscard }) {
   return (
     <AnimatePresence>
       {count > 0 && (
-        <motion.div
+        <Motion.div
           key="savebar"
           className="admin-savebar"
           initial={{ opacity: 0, y: 8 }}
@@ -86,7 +86,7 @@ export function SaveBar({ count, saving, onSave, onDiscard }) {
               Save Changes
             </button>
           </div>
-        </motion.div>
+        </Motion.div>
       )}
     </AnimatePresence>
   );
@@ -107,7 +107,7 @@ export function Modal({ open, title, onClose, wide = false, children }) {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <Motion.div
           key="backdrop"
           className="admin-modal-backdrop"
           initial={{ opacity: 0 }}
@@ -116,7 +116,7 @@ export function Modal({ open, title, onClose, wide = false, children }) {
           transition={{ duration: 0.2, ease: EASE_BRAND }}
           onClick={(e) => e.target === e.currentTarget && onClose()}
         >
-          <motion.div
+          <Motion.div
             className={`admin-modal ${wide ? "admin-modal-wide" : ""}`}
             role="dialog"
             aria-modal="true"
@@ -128,8 +128,8 @@ export function Modal({ open, title, onClose, wide = false, children }) {
           >
             {title && <h3 className="admin-modal-title">{title}</h3>}
             {children}
-          </motion.div>
-        </motion.div>
+          </Motion.div>
+        </Motion.div>
       )}
     </AnimatePresence>
   );
@@ -246,7 +246,7 @@ export function DragGrid({
             }}
             onDrop={(e) => e.preventDefault()}
           >
-            <motion.div
+            <Motion.div
               layout
               transition={{ duration: 0.2, ease: EASE_BRAND }}
               className={`admin-drag-card ${
@@ -257,7 +257,7 @@ export function DragGrid({
                 isDragging,
                 move: (delta) => moveTo(idx, idx + delta),
               })}
-            </motion.div>
+            </Motion.div>
           </div>
         );
       })}

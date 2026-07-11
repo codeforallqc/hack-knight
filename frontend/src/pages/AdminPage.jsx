@@ -5,7 +5,7 @@
 
 import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion as Motion, MotionConfig } from "motion/react";
 import { logout } from "../lib/api";
 import ScheduleTab from "../components/admin/ScheduleTab";
 import GalleryTab from "../components/admin/GalleryTab";
@@ -32,6 +32,9 @@ export default function AdminPage() {
   }, []);
 
   return (
+    // reducedMotion="user" — JS-driven animations (save bar, modals, drag
+    // shuffle) honor the OS setting; CSS transitions are covered globally.
+    <MotionConfig reducedMotion="user">
     <main className="admin-page">
       <header className="admin-header">
         <div>
@@ -67,7 +70,7 @@ export default function AdminPage() {
               />
             )}
             {active === tab.key && (
-              <motion.span
+              <Motion.span
                 layoutId="admin-tab-underline"
                 className="absolute inset-x-2 -bottom-px h-0.5 rounded-pill bg-ultraviolet"
                 style={{ boxShadow: "0 0 8px var(--color-ultraviolet)" }}
@@ -78,13 +81,14 @@ export default function AdminPage() {
         ))}
       </nav>
 
-      {TABS.map(({ key, Component }) => (
-        <div key={key} hidden={active !== key}>
-          <Component
-            onDirtyChange={(count) => handleDirtyChange(key, count)}
+      {TABS.map((tab) => (
+        <div key={tab.key} hidden={active !== tab.key}>
+          <tab.Component
+            onDirtyChange={(count) => handleDirtyChange(tab.key, count)}
           />
         </div>
       ))}
     </main>
+    </MotionConfig>
   );
 }
