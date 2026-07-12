@@ -29,8 +29,21 @@ for (const envVar of requiredEnvVars) {
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      
+      const allowed = process.env.FRONTEND_URL;
+      if (
+        origin === allowed || 
+        origin.endsWith(".vercel.app") || 
+        origin.startsWith("http://localhost:")
+      ) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
