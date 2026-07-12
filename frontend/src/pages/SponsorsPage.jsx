@@ -1,8 +1,9 @@
-// Groups sponsors by tier using .filter() on the data from data/sponsors.js
+// Groups sponsors by tier using .filter() on the data from the API (static fallback)
 
-import { sponsors } from '../data/sponsors';        // import the full sponsors array from the data folder
+import { useSponsors } from '../hooks/useSponsors';
 
 export default function SponsorsPage() {
+  const { sponsors } = useSponsors();
 
   // Filter sponsors by tier
   const platinum = sponsors.filter(s => s.tier === "platinum");

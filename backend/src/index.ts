@@ -5,6 +5,8 @@ import authRouter from "./routes/auth.js";
 import scheduleRouter from "./routes/schedule.js";
 import galleryRouter from "./routes/gallery.js";
 import teamRouter from "./routes/team.js";
+import companiesRouter from "./routes/companies.js";
+import settingsRouter from "./routes/settings.js";
 import cors from "cors";
 
 const app = express();
@@ -27,8 +29,21 @@ for (const envVar of requiredEnvVars) {
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      
+      const allowed = process.env.FRONTEND_URL;
+      if (
+        origin === allowed || 
+        origin.endsWith(".vercel.app") || 
+        origin.startsWith("http://localhost:")
+      ) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
@@ -44,6 +59,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/schedule", scheduleRouter);
 app.use("/api/gallery", galleryRouter);
 app.use("/api/team", teamRouter);
+app.use("/api/companies", companiesRouter);
+app.use("/api/settings", settingsRouter);
 
 // Start server
 app.listen(PORT, () => {

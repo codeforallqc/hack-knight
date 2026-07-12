@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useSpring } from 'motion/react';
 import CountdownTimer from './CountdownTimer';
 import MascotEyes from './MascotEyes';
-import hillsBgSvg  from '../assets/brand/hillsbg.svg';
-import hillsSvg    from '../assets/brand/hills.svg';
-import knightsSvg  from '../assets/brand/knights1.svg';
-import towerSvg    from '../assets/brand/tower.svg';
+import hillsBgSvg  from '../../assets/brand/hillsbg.svg';
+import hillsSvg    from '../../assets/brand/hills.svg';
+import knightsSvg  from '../../assets/brand/knights1.svg';
+import towerSvg    from '../../assets/brand/tower.svg';
 
 export default function Hero() {
   const { scrollY } = useScroll();

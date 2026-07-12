@@ -62,6 +62,40 @@ ALTER TABLE gallery_photos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read gallery_photos" ON gallery_photos FOR SELECT USING (true);
 CREATE POLICY "Service role full access gallery_photos" ON gallery_photos FOR ALL USING (auth.role() = 'service_role');
 
+-- Companies (reusable logo badges for team members; also doubles as the
+-- sponsor list — a company becomes a public sponsor once sponsor_tier is set)
+
+CREATE TABLE companies (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  logo_url TEXT NOT NULL,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  sponsor_tier TEXT CHECK (sponsor_tier IN ('platinum', 'gold', 'silver', 'bronze')),
+  sponsor_url TEXT,
+  sponsor_blurb TEXT
+);
+
+ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read companies" ON companies FOR SELECT USING (true);
+CREATE POLICY "Service role full access companies" ON companies FOR ALL USING (auth.role() = 'service_role');
+
+-- Site Settings (Misc admin tab — singleton key/value store)
+
+CREATE TABLE site_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read site_settings" ON site_settings FOR SELECT USING (true);
+CREATE POLICY "Service role full access site_settings" ON site_settings FOR ALL USING (auth.role() = 'service_role');
+
+INSERT INTO site_settings (key, value) VALUES
+  ('countdown_target', '2026-10-09T00:00:00'),
+  ('mlh_badge_enabled', 'false');
+
 -- Team Members
 
 CREATE TABLE team_members (
@@ -70,9 +104,21 @@ CREATE TABLE team_members (
   title TEXT NOT NULL,
   photo_url TEXT NOT NULL,
   badge_url TEXT,
+  linkedin_url TEXT,
+  github_url TEXT,
+  company1_id UUID REFERENCES companies(id) ON DELETE SET NULL,
+  company2_id UUID REFERENCES companies(id) ON DELETE SET NULL,
   sort_order INT DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Migration (run against existing DB):
+-- ALTER TABLE team_members ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
+-- ALTER TABLE team_members ADD COLUMN IF NOT EXISTS github_url TEXT;
+-- See supabase/migrations/20260711000000_companies_and_member_badges.sql for
+-- the companies table + company1_id/company2_id columns, and
+-- supabase/migrations/20260711000001_sponsors_and_site_settings.sql for the
+-- companies sponsor_* columns + site_settings table.
 
 ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read team_members" ON team_members FOR SELECT USING (true);

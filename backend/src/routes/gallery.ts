@@ -7,6 +7,7 @@ import {
   GalleryPhoto,
   GalleryYear,
   GalleryYearWithPhotos,
+  ReorderBody,
 } from "../types.js";
 
 const galleryRouter = Router();
@@ -159,6 +160,16 @@ galleryRouter.post(
       return;
     }
 
+    // Append new photos after the year's current highest sort_order.
+    const { data: maxRow } = await supabase
+      .from("gallery_photos")
+      .select("sort_order")
+      .eq("year_id", req.params.yearId)
+      .order("sort_order", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    let nextOrder = ((maxRow as { sort_order: number } | null)?.sort_order ?? -1) + 1;
+
     const created: GalleryPhoto[] = [];
 
     for (const file of files) {
@@ -187,7 +198,7 @@ galleryRouter.post(
           year_id: req.params.yearId,
           src: publicUrl,
           alt: file.originalname,
-          sort_order: 0,
+          sort_order: nextOrder++,
         })
         .select()
         .single();
@@ -202,6 +213,106 @@ galleryRouter.post(
     }
 
     res.status(201).json(created);
+  },
+);
+
+// PUT /api/gallery/photos/reorder  (admin) - batch-update sort orders after a drag.
+// Registered before /photos/:id so Express doesn't treat "reorder" as a photo id.
+galleryRouter.put(
+  "/photos/reorder",
+  authenticateAdmin,
+  async (req: Request<{}, {}, ReorderBody>, res: Response) => {
+    const { order } = req.body;
+    if (!Array.isArray(order) || order.length === 0) {
+      res.status(422).json({ message: "Order is required" });
+      return;
+    }
+
+    const results = await Promise.all(
+      order.map((o) =>
+        supabase
+          .from("gallery_photos")
+          .update({ sort_order: o.sort_order })
+          .eq("id", o.id),
+      ),
+    );
+
+    if (results.some((r) => r.error)) {
+      res.status(500).json({ message: "Server error" });
+      return;
+    }
+    res.status(204).send();
+  },
+);
+
+// PUT /api/gallery/photos/:id/replace  (admin) - swap the underlying image,
+// keeping the photo row (and its position) intact.
+galleryRouter.put(
+  "/photos/:id/replace",
+  authenticateAdmin,
+  upload.single("photo"),
+  async (req: Request<{ id: string }>, res: Response) => {
+    if (!req.file) {
+      res.status(422).json({ message: "Photo file is required" });
+      return;
+    }
+
+    const { data: existing, error: fetchError } = await supabase
+      .from("gallery_photos")
+      .select("*")
+      .eq("id", req.params.id)
+      .maybeSingle();
+
+    if (fetchError) {
+      res.status(500).json({ message: "Server error" });
+      return;
+    }
+    if (!existing) {
+      res.status(404).json({ message: "Photo not found" });
+      return;
+    }
+    const photo = existing as GalleryPhoto;
+
+    const ext = req.file.originalname.split(".").pop() ?? "jpg";
+    const path = `gallery/${photo.year_id}/${randomUUID()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      res.status(500).json({ message: "Upload failed" });
+      return;
+    }
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from(BUCKET).getPublicUrl(path);
+
+    const { data, error } = await supabase
+      .from("gallery_photos")
+      .update({ src: publicUrl, alt: req.file.originalname })
+      .eq("id", req.params.id)
+      .select()
+      .single();
+
+    if (error) {
+      // Roll back the orphaned storage object.
+      await supabase.storage.from(BUCKET).remove([path]);
+      res.status(500).json({ message: "Server error" });
+      return;
+    }
+
+    // Clean up the replaced storage object.
+    const oldPath = storagePathFromPublicUrl(photo.src);
+    if (oldPath) {
+      await supabase.storage.from(BUCKET).remove([oldPath]);
+    }
+
+    res.json(data);
   },
 );
 
