@@ -185,7 +185,7 @@ chore(backend): replace better-sqlite3 with @supabase/supabase-js
 ```
 
 Types in use: `feat`, `fix`, `refactor`, `chore`, `docs`. Common scopes:
-`frontend`, `backend`, `admin`, `hooks`.
+`frontend`, `backend`, `admin`, `site`, `api`, `db`, `hooks`.
 
 Keep commits **small and logical** — one coherent change per commit, so a
 reviewer can read the history as a story and a bad change can be reverted

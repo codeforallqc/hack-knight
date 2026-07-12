@@ -10,6 +10,7 @@ Express + Supabase backend, both deployed on Vercel.
 | [frontend-stack.md](frontend-stack.md) | React/Vite/Tailwind stack, running the dev server, env vars, installing & updating packages, conventions |
 | [backend-stack.md](backend-stack.md) | Express/TypeScript/Supabase stack, env setup, **running Supabase locally**, migrations, deployment |
 | [testing-and-github.md](testing-and-github.md) | How to verify changes before pushing, branch/commit/PR workflow, hard rules |
+| [MASTER.md](MASTER.md) | Design system: tokens, typography, motion rules, and the admin ("backstage") component kit |
 
 ## Quick start (full local stack)
 

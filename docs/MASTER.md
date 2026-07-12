@@ -103,6 +103,12 @@ already globally zeroes durations in `index.css` — never opt out of it.
 
 ## 7. Components (admin kit — `frontend/src/components/admin/ui.jsx` + `styles/admin.css`)
 
+Shared modules live at the `admin/` root: `ui.jsx` (the kit below), `icons.jsx`
+(the SVG glyph set — never inline new SVGs in tabs), and `useObjectUrls.js`
+(object-URL lifecycle for staged image previews). Each large tab is a folder
+(`schedule/`, `gallery/`, `team/`, `sponsors/`) holding the tab plus its
+modals, panels, and utils; `MiscTab.jsx` stays flat.
+
 - **Panel** — `bg-surface border border-border/40 rounded-card p-5 shadow-card`,
   title row: display-bold title + optional mono count pill.
 - **Field** — mono uppercase `text-xs` label above control; inputs
@@ -129,6 +135,17 @@ already globally zeroes durations in `index.css` — never opt out of it.
   resting style. Keyboard fallback: ← → move buttons on card focus.
 - **Empty state** — mono `text-text-muted` message centered in a dashed
   `border-border/40` box.
+- **Toggle** — pill switch (`role="switch"`), ultraviolet when on,
+  `black/30` + border when off; 150ms color/translate transitions.
+- **CollapseTitle** — panel title as a toggle button with a rotating chevron
+  (`aria-expanded`); used by collapsible panels (Companies, Other Companies).
+- **CardOverlay / CardMoveButtons** — hover/focus-revealed icon-button
+  clusters pinned to a drag card's corners; move buttons are the keyboard
+  fallback for drag-to-reorder.
+- **ScaledPreview** — shrink-to-fit wrapper for live previews of public
+  components (which size themselves to the viewport): measures natural size
+  with a `ResizeObserver` and scales down (never up) so previews never
+  horizontally scroll their panel.
 
 ## 8. Anti-patterns (repo-wide)
 

@@ -30,11 +30,24 @@ frontend/
     ├── App.jsx             # Router, page transitions, auth guard
     ├── index.css           # Tailwind v4 entry + base layer
     ├── pages/              # Route-level components (Home, SchedulePage, AdminPage, ...)
-    ├── components/         # Shared components (Navbar, Hero, FAQ, ...)
-    │   └── admin/          # Admin dashboard tabs (ScheduleTab, GalleryTab, TeamTab)
-    ├── hooks/              # Data-fetching hooks (useSchedule, useGallery, useTeam)
+    ├── components/
+    │   ├── site/           # Public site components (Navbar, Hero, CountdownTimer, TeamSection, ...)
+    │   └── admin/          # Admin dashboard
+    │       ├── ui.jsx            # Shared UI kit (Panel, SaveBar, DiffModal, DragGrid, ScaledPreview, ...)
+    │       ├── icons.jsx         # Shared SVG icon set
+    │       ├── useObjectUrls.js  # Object-URL lifecycle for staged image previews
+    │       ├── MiscTab.jsx       # Site settings tab (countdown target, MLH badge)
+    │       ├── schedule/         # ScheduleTab + EventModal + scheduleMeta
+    │       ├── gallery/          # GalleryTab + YearPanel
+    │       ├── team/             # TeamTab + MemberModal + CompaniesPanel + memberUtils
+    │       └── sponsors/         # SponsorsTab + SponsorModal + TierPanel + OtherCompaniesPanel + sponsorUtils
+    ├── hooks/              # Data-fetching hooks (useSchedule, useGallery, useTeam,
+    │                       #   useSponsors, useSiteSettings, useCountdown)
     ├── data/               # Static fallback data used when the API is unreachable
-    ├── lib/api.js          # Auth-aware fetch helper (JWT from localStorage)
+    ├── lib/
+    │   ├── api.js          # Auth-aware fetch helper (JWT from localStorage) + compressImage
+    │   ├── mlh.js          # MLH trust badge constants (shared by Navbar + admin preview)
+    │   └── schedulePacking.js  # Overlap-packing layout math for ScheduleGrid
     ├── styles/             # components.css, admin.css
     └── assets/             # Brand SVGs, photos, logos
 ```
@@ -45,9 +58,11 @@ The frontend **never talks to Supabase directly**. All data goes through the
 Express API (see [backend-stack.md](backend-stack.md)):
 
 - **Public pages** use the hooks in `src/hooks/` (`useSchedule`, `useGallery`,
-  `useTeam`). Each hook fetches from the API and **falls back to the static
-  data in `src/data/`** if the API is down or returns nothing. This means the
-  site never renders empty — keep the static data reasonably fresh.
+  `useTeam`, `useSponsors`, `useSiteSettings`, `useCountdown`). Each hook
+  fetches from the API and **falls back to the static data in `src/data/`**
+  (or a sensible default for site settings) if the API is down or returns
+  nothing. This means the site never renders empty — keep the static data
+  reasonably fresh.
 - **Admin pages** use `src/lib/api.js`, which attaches the JWT stored in
   `localStorage` (key `admin_token`) to every request, throws on non-2xx, and
   clears the token on 401 so `RequireAuth` in `App.jsx` bounces back to login.
@@ -122,7 +137,12 @@ After any dependency change:
   component files or CSS.
 - **Design tokens:** colors like `void`, `surface`, `ultraviolet`, and the
   sponsor tier colors are defined in the Tailwind setup — use the tokens, not
-  raw hex values. See `frontend/SETUP_CHANGELOG.md` for the full token table.
+  raw hex values. See `frontend/SETUP_CHANGELOG.md` for the full token table
+  and [MASTER.md](MASTER.md) for the design system (including the admin layer).
+- **Component halves:** public site components live in `components/site/`,
+  admin components in `components/admin/`. Each large admin tab is a folder
+  (tab + its modals/panels/utils); shared admin pieces live at the `admin/`
+  root (`ui.jsx`, `icons.jsx`, `useObjectUrls.js`).
 - **Admin routes** (`/admin/*`) render standalone without the public
   Navbar/Footer — `App.jsx` checks `location.pathname.startsWith("/admin")`.
 - New pages get a `<Route>` in `App.jsx` wrapped in `PageTransition`.

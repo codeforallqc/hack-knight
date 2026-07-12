@@ -45,8 +45,10 @@ backend/
     └── routes/
         ├── auth.ts         # POST /api/auth/login
         ├── schedule.ts     # /api/schedule + /api/schedule/days
-        ├── gallery.ts      # /api/gallery (years, photos, uploads)
-        └── team.ts         # /api/team
+        ├── gallery.ts      # /api/gallery (years, photos, uploads, replace, reorder)
+        ├── team.ts         # /api/team (members, photo/badge uploads, reorder)
+        ├── companies.ts    # /api/companies (team badges + sponsors, logo upload, reorder)
+        └── settings.ts     # /api/settings (site settings key/value store)
 ```
 
 ## API surface
@@ -55,8 +57,15 @@ backend/
 - `POST /api/auth/login` — password in, `{ token }` out (JWT, 8 h expiry)
 - `GET /api/schedule`, `GET /api/schedule/days` — public reads
 - `POST/PUT/DELETE /api/schedule/...` — admin only
-- `GET /api/gallery` — public; year/photo writes and uploads admin only
-- `GET /api/team` — public; member writes and photo uploads admin only
+- `GET /api/gallery` — public; year/photo writes, uploads, replaces, and
+  `PUT /api/gallery/photos/reorder` admin only
+- `GET /api/team` — public; member writes, photo/badge uploads, and
+  `PUT /api/team/reorder` (display priority) admin only
+- `GET /api/companies` — public; a row is a reusable team badge and becomes a
+  sponsor when it has a `sponsor_tier`. CRUD with logo upload and
+  `PUT /api/companies/reorder` (tier display order) admin only
+- `GET /api/settings` — public read of all site settings (e.g.
+  `countdown_target`, `mlh_badge_enabled`); `PUT /api/settings/:key` admin only
 
 "Admin only" routes use the `authenticateAdmin` middleware, which verifies the
 `Authorization: Bearer <token>` header against `JWT_SECRET`.
@@ -163,7 +172,9 @@ npx supabase stop --no-backup   # shut down AND wipe local data
 Schema lives in two places, deliberately:
 
 - `supabase/migrations/*.sql` — ordered migration files the CLI applies.
-  Currently: initial schema + the `photos` storage bucket and its policies.
+  Currently: initial schema, the `photos` storage bucket and its policies,
+  the `companies` table + member badge columns, and the sponsor fields +
+  `site_settings` table.
 - `backend/schema.sql` — the flat, human-readable canonical schema, run once
   in the cloud project's SQL editor.
 
