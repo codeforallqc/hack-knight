@@ -266,7 +266,7 @@ export default function TeamTab({ onDirtyChange }: { onDirtyChange?: (count: num
         const formData = new FormData();
         formData.append("name", c.name);
         const compressed = await compressImage(c._logoFile!);
-        formData.append("logo", compressed, c._logoFile!.name);
+        formData.append("logo", compressed);
         const created = await apiUpload<{ id: string }>("/companies", formData);
         companyIdMap.set(c.id, created.id);
       }
@@ -282,7 +282,7 @@ export default function TeamTab({ onDirtyChange }: { onDirtyChange?: (count: num
         formData.append("name", c.name);
         if (c._logoFile) {
           const compressed = await compressImage(c._logoFile);
-          formData.append("logo", compressed, c._logoFile.name);
+          formData.append("logo", compressed);
         }
         await apiUpload(`/companies/${c.id}`, formData, "PUT");
       }
@@ -309,11 +309,11 @@ export default function TeamTab({ onDirtyChange }: { onDirtyChange?: (count: num
         formData.append("company2_id", resolveCompany(m.company2_id));
         if (m._photoFile) {
           const compressed = await compressImage(m._photoFile);
-          formData.append("photo", compressed, m._photoFile.name);
+          formData.append("photo", compressed);
         }
         if (m._badgeFile) {
           const compressed = await compressImage(m._badgeFile);
-          formData.append("badge", compressed, m._badgeFile.name);
+          formData.append("badge", compressed);
         }
         await apiUpload(`/team/${m.id}`, formData, "PUT");
       }
@@ -331,10 +331,10 @@ export default function TeamTab({ onDirtyChange }: { onDirtyChange?: (count: num
         formData.append("company2_id", resolveCompany(m.company2_id));
         formData.append("sort_order", String(i));
         const compressedPhoto = await compressImage(m._photoFile!);
-        formData.append("photo", compressedPhoto, m._photoFile!.name);
+        formData.append("photo", compressedPhoto);
         if (m._badgeFile) {
           const compressedBadge = await compressImage(m._badgeFile);
-          formData.append("badge", compressedBadge, m._badgeFile.name);
+          formData.append("badge", compressedBadge);
         }
         await apiUpload("/team", formData);
       }

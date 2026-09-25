@@ -14,7 +14,7 @@ strict mode enabled.
 | Routing | React Router 7 (`react-router-dom`) | `BrowserRouter` set up in `src/App.tsx` |
 | Styling | Tailwind CSS 4 (via `@tailwindcss/vite`) | Plus hand-written CSS in `src/styles/` |
 | Animation | Motion 12 (`motion/react`) | Successor to Framer Motion; used for page transitions |
-| Images | `browser-image-compression` | Compresses admin uploads client-side before sending |
+| Images | `browser-image-compression` | Resizes admin uploads to display size and re-encodes as WebP before sending |
 | Markdown | `react-markdown` | Renders admin-written sponsor blurbs; skips raw HTML by default |
 | Linting | ESLint 9 (flat config, `eslint.config.js`) | With `typescript-eslint`, `react-hooks`, and `react-refresh` plugins |
 

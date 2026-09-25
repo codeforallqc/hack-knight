@@ -243,8 +243,8 @@ export default function GalleryTab({ onDirtyChange }: { onDirtyChange?: (count: 
         for (const p of y.photos) {
           if (!p._new && p._replaceFile) {
             const formData = new FormData();
-            const compressed = await compressImage(p._replaceFile);
-            formData.append("photo", compressed, p._replaceFile.name);
+            const compressed = await compressImage(p._replaceFile, "gallery");
+            formData.append("photo", compressed);
             await apiUpload(`/gallery/photos/${p.id}/replace`, formData, "PUT");
           }
         }
@@ -256,8 +256,8 @@ export default function GalleryTab({ onDirtyChange }: { onDirtyChange?: (count: 
         if (newPhotos.length > 0) {
           const formData = new FormData();
           for (const p of newPhotos) {
-            const compressed = await compressImage(p._file!);
-            formData.append("photos", compressed, p._file!.name);
+            const compressed = await compressImage(p._file!, "gallery");
+            formData.append("photos", compressed);
           }
           const created = await apiUpload<Array<{ id: string }>>(
             `/gallery/years/${realYearId}/photos`,

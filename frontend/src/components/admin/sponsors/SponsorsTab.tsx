@@ -176,7 +176,7 @@ export default function SponsorsTab({ onDirtyChange }: { onDirtyChange?: (count:
         formData.append("url", s.url || "");
         formData.append("blurb", s.blurb || "");
         const compressed = await compressImage(s._logoFile!);
-        formData.append("logo", compressed, s._logoFile!.name);
+        formData.append("logo", compressed);
         const created = await apiUpload<{ id: string }>("/sponsors", formData);
         idMap.set(s.id, created.id);
       }
@@ -194,7 +194,7 @@ export default function SponsorsTab({ onDirtyChange }: { onDirtyChange?: (count:
         if (orig.blurb !== s.blurb) formData.append("blurb", s.blurb || "");
         if (s._logoFile) {
           const compressed = await compressImage(s._logoFile);
-          formData.append("logo", compressed, s._logoFile.name);
+          formData.append("logo", compressed);
         }
         await apiUpload(`/sponsors/${s.id}`, formData, "PUT");
       }

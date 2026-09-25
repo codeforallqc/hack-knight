@@ -126,14 +126,39 @@ export const apiUpload = <T = unknown>(
   method: string = "POST",
 ) => apiFetch<T>(path, { method, body: formData });
 
+// Longest edge per kind of image. Uploads are served straight from Supabase
+// storage and every byte counts toward its egress quota, so size them for
+// how they're displayed (at 2x for retina), not for the source camera.
+// Keep in sync with backend/scripts/optimize-storage-images.ts.
+const MAX_EDGE = {
+  // Headshots, character badges and logos render at most ~250px wide.
+  thumb: 512,
+  // Gallery photos can open full-screen in the lightbox.
+  gallery: 1600,
+} as const;
+
+export type ImageKind = keyof typeof MAX_EDGE;
+
 /**
- * Compress an image in the browser before upload to stay well under Vercel's
- * 4.5 MB request body limit.
+ * Resize and re-encode an image as WebP in the browser before upload. Keeps
+ * the request well under Vercel's 4.5 MB body limit and, more importantly,
+ * keeps the stored file small. SVGs are vector and already tiny, so they
+ * pass through untouched.
  */
-export function compressImage(file: File): Promise<File> {
-  return imageCompression(file, {
-    maxSizeMB: 1,
-    maxWidthOrHeight: 1920,
+export async function compressImage(
+  file: File,
+  kind: ImageKind = "thumb",
+): Promise<File> {
+  if (file.type === "image/svg+xml") return file;
+
+  const blob = await imageCompression(file, {
+    maxSizeMB: kind === "gallery" ? 0.5 : 0.15,
+    maxWidthOrHeight: MAX_EDGE[kind],
+    fileType: "image/webp",
+    initialQuality: 0.8,
     useWebWorker: true,
   });
+  // The backend names the stored object after this file's extension.
+  const name = file.name.replace(/\.[^.]*$/, "") + ".webp";
+  return new File([blob], name, { type: "image/webp" });
 }

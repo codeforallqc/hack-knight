@@ -251,20 +251,31 @@ After changes, confirm `npm run dev` boots and `npm run build` compiles
 cleanly (TypeScript strict mode will catch type breakage), then commit
 `package.json` + `package-lock.json` together.
 
-## Storage cache headers
+## Storage images and cache headers
 
-Uploaded files get random UUID names, so the content behind a URL never
-changes. Every upload route therefore passes a one-year `cacheControl`
-(`IMMUTABLE_CACHE` in `db/supabase.ts`), letting browsers cache images
-instead of re-requesting them on every mount. Objects uploaded before this
-existed (or through the Supabase dashboard, which stores `no-cache`) keep
-their old setting; `scripts/set-storage-cache-control.ts` re-uploads
-everything in the `photos` bucket with the current one. Run it once per
-environment:
+Public images are served straight from Supabase storage, so their size and
+cacheability decide how much egress the site uses (the free plan includes
+5 GB of cached egress per month). Two things keep that down:
+
+- **Size.** The admin resizes every upload to its display size and
+  re-encodes it as WebP before sending (`compressImage` in
+  `frontend/src/lib/api.ts`): 512px on the longest edge for headshots,
+  badges and logos, 1600px for gallery photos. SVGs are sent as-is.
+- **Caching.** Uploaded files get random UUID names, so the content behind
+  a URL never changes. Every upload route therefore passes a one-year
+  `cacheControl` (`IMMUTABLE_CACHE` in `db/supabase.ts`), letting browsers
+  cache images instead of re-requesting them on every mount.
+
+Objects uploaded before either of these existed (or through the Supabase
+dashboard, which stores `no-cache`) are fixed by
+`scripts/optimize-storage-images.ts`. It resizes oversized images to WebP
+in place (same path, so DB URLs stay valid) and re-uploads everything in
+the `photos` bucket with the one-year cache. Run it once per environment:
 
 ```bash
 cd backend
-npx tsx scripts/set-storage-cache-control.ts   # uses SUPABASE_* from .env or the shell
+npx tsx scripts/optimize-storage-images.ts --dry-run   # report sizes only
+npx tsx scripts/optimize-storage-images.ts             # uses SUPABASE_* from .env or the shell
 ```
 
 ## Deployment
@@ -280,4 +291,4 @@ things make this work:
   Supabase vars pointing at the cloud project.
 
 Known constraint: Vercel caps request bodies at **4.5 MB**, which is why the
-frontend compresses images to under 1 MB before uploading.
+frontend resizes and compresses images before uploading.

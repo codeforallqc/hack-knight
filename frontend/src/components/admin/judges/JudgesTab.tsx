@@ -224,7 +224,7 @@ export default function JudgesTab({ onDirtyChange }: { onDirtyChange?: (count: n
         formData.append("company2_id", j.company2_id);
         if (j._photoFile) {
           const compressed = await compressImage(j._photoFile);
-          formData.append("photo", compressed, j._photoFile.name);
+          formData.append("photo", compressed);
         }
         await apiUpload(`/judges/${j.id}`, formData, "PUT");
       }
@@ -240,7 +240,7 @@ export default function JudgesTab({ onDirtyChange }: { onDirtyChange?: (count: n
         formData.append("company2_id", j.company2_id);
         formData.append("sort_order", String(i));
         const compressedPhoto = await compressImage(j._photoFile!);
-        formData.append("photo", compressedPhoto, j._photoFile!.name);
+        formData.append("photo", compressedPhoto);
         await apiUpload("/judges", formData);
       }
 
